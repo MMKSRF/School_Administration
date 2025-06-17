@@ -54,7 +54,7 @@ const Hero = () => {
     >
       <div className="flex flex-col md:flex-row items-center">
         {/* Text Content */}
-        <div className="md:w-1/2 mb-12 md:mb-0 md:pr-12     " ref={textRef}>
+        <div className="md:w-1/2 mb-12 md:mb-0 md:pr-12   " ref={textRef}>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
             Organize Your School's Schedule <span className="text-blue-600">Effortlessly</span> with Aqimari
           </h1>

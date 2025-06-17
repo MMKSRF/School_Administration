@@ -1,5 +1,5 @@
 
-import Logo from './Logo';
+import Logo from './Ui/Logo';
 
 const Footer = () => {
   return (
