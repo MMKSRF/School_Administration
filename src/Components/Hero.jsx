@@ -54,16 +54,16 @@ const Hero = () => {
     >
       <div className="flex flex-col md:flex-row items-center">
         {/* Text Content */}
-        <div className="md:w-1/2 mb-12 md:mb-0 md:pr-12" ref={textRef}>
+        <div className="md:w-1/2 mb-12 md:mb-0 md:pr-12     " ref={textRef}>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
             Organize Your School's Schedule <span className="text-blue-600">Effortlessly</span> with Aqimari
           </h1>
-          <p className="text-xl text-gray-600 mb-10 max-w-lg">
+          <p className="text-xl text-gray-600 mb-5 max-w-lg">
             Say goodbye to timetable clashes and hello to smart scheduling. Designed specifically for Ethiopian schools and beyond.
           </p>
           
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 mb-10 sm:space-x-4" ref={buttonRef}>
+          <div className="flex flex-col md:w-120  md lg:w-auto sm:flex-row space-y-4 sm:space-y-0 mb-10 sm:space-x-4   " ref={buttonRef}>
             <button className="bg-blue-600 text-white px-8 py-4 rounded-full font-bold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-transform">
               Login to Your School
             </button>

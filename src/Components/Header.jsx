@@ -1,12 +1,13 @@
-
 import { gsap } from 'gsap';
-import Logo from './Logo';
-import { useState, useEffect, useRef } from 'react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useState, useEffect, useRef } from 'react';
+import Logo from './Logo';
+
 gsap.registerPlugin(ScrollTrigger);
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState(null);
   const headerRef = useRef(null);
 
   useEffect(() => {
@@ -26,6 +27,23 @@ const Header = () => {
         }
       }
     });
+
+    // Highlight nav links based on section in view
+    const sections = ['about', 'features', 'how-it-works', 'contact'];
+
+    sections.forEach((id) => {
+      ScrollTrigger.create({
+        trigger: `#${id}`,
+        start: 'top center',
+        end: 'bottom center',
+        onEnter: () => setActiveSection(id),
+        onEnterBack: () => setActiveSection(id),
+      });
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
   }, []);
 
   const scrollToSection = (id) => {
@@ -41,8 +59,8 @@ const Header = () => {
   };
 
   return (
-    <header 
-      
+    <header
+      ref={headerRef}
       className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-sm py-4 transition-all duration-300"
     >
       <div className="container mx-auto px-4 flex justify-between items-center">
@@ -50,29 +68,32 @@ const Header = () => {
           <Logo />
           <span className="text-2xl font-bold text-blue-600">Aqimari</span>
         </div>
-        
+
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8">
           {['about', 'features', 'how-it-works'].map((item) => (
             <button
               key={item}
-                onClick={() => scrollToSection(item)}
-          
-              className="text-gray-700 hover:text-blue-600 font-medium capitalize transition-colors"
+              onClick={() => scrollToSection(item)}
+              className={`font-medium capitalize transition-colors cursor-pointer ${
+                activeSection === item ? 'text-blue-600' : 'text-gray-700'
+              } hover:text-blue-600 active:text-blue-400 focus:text-blue-600`}
             >
               {item.replace('-', ' ')}
             </button>
           ))}
-          <button 
+          <button
             onClick={() => scrollToSection('contact')}
-            className="bg-blue-600 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-700 transition-colors"
+            className={`px-5 py-2 rounded-full font-medium transition-colors ${
+              activeSection === 'contact' ? 'bg-blue-700' : 'bg-blue-600'
+            } text-white hover:bg-blue-700`}
           >
             Contact
           </button>
         </nav>
-        
+
         {/* Mobile Menu Button */}
-        <button 
+        <button
           className="md:hidden text-gray-700 focus:outline-none"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
@@ -85,7 +106,7 @@ const Header = () => {
           </svg>
         </button>
       </div>
-      
+
       {/* Mobile Navigation */}
       {isMenuOpen && (
         <nav className="md:hidden bg-white py-4 px-4 shadow-lg">
@@ -94,14 +115,18 @@ const Header = () => {
               <button
                 key={item}
                 onClick={() => scrollToSection(item)}
-                className="text-gray-700 hover:text-blue-600 font-medium text-left capitalize py-2 transition-colors"
+                className={`font-medium capitalize text-left transition-colors py-2 ${
+                  activeSection === item ? 'text-blue-600' : 'text-gray-700'
+                } hover:text-blue-600`}
               >
                 {item.replace('-', ' ')}
               </button>
             ))}
-            <button 
+            <button
               onClick={() => scrollToSection('contact')}
-              className="bg-blue-600 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-700 transition-colors"
+              className={`px-5 py-2 rounded-full font-medium transition-colors ${
+                activeSection === 'contact' ? 'bg-blue-700' : 'bg-blue-600'
+              } text-white hover:bg-blue-700`}
             >
               Contact
             </button>
