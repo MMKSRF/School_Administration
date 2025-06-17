@@ -1,7 +1,8 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useState, useEffect, useRef } from 'react';
-import Logo from './Ui/Logo';
+import { NavLink } from 'react-router-dom';
+import Logo from '../Ui/Logo';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -72,15 +73,16 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8">
           {['about', 'features', 'how-it-works'].map((item) => (
-            <button
+            <NavLink
               key={item}
               onClick={() => scrollToSection(item)}
               className={`font-medium capitalize transition-colors cursor-pointer ${
                 activeSection === item ? 'text-blue-600' : 'text-gray-700'
               } hover:text-blue-600 active:text-blue-400 focus:text-blue-600`}
+              to={`/${item}`}
             >
               {item.replace('-', ' ')}
-            </button>
+            </NavLink>
           ))}
           <button
             onClick={() => scrollToSection('contact')}

@@ -21,7 +21,7 @@ const HowItWorks = () => {
       { scaleY: 0, transformOrigin: "top center" },
       {
         scaleY: 1,
-        duration: 1.5,
+        duration: 1,
         ease: "power3.out",
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -51,7 +51,7 @@ const HowItWorks = () => {
             toggleActions: 'play none none none',
             markers: false
           },
-          delay: index * 0.2
+          delay: index * 0.1
         }
       );
       

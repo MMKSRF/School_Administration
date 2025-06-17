@@ -2,8 +2,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
-import Header from '../Header';
-import Footer from '../Footer';
+import Header from '../Pages/Header';
+import Footer from '../Pages/Footer';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 
@@ -64,20 +64,31 @@ const JoinSchool = () => {
   
   useEffect(() => {
     // Entrance animation
-    gsap.from(sectionRef.current, {
-      y: 50,
+    gsap.fromTo(sectionRef.current,{
+      opacity: 0,
+      y: 0,
+      x:0,
+    
+    }, {
+      y: 0,
+      x: 0,
+      scale: 1,
       opacity: 100,
-      duration: 0.8,
+      duration: 1,
       ease: "power3.out"
     });
     
     // Animate content on step change
     if (contentRef.current) {
-      gsap.from(contentRef.current.children, {
-        y: 30,
+      gsap.fromTo(contentRef.current.children,{
+        opacity: 0,
+        x: -1000
+      },
+         {
+        x: 0,
         opacity: 100,
         stagger: 0.1,
-        duration: 0.5,
+        duration: 0.9,
         ease: "power2.out"
       });
     }

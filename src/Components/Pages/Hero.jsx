@@ -2,6 +2,7 @@
 import  { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { NavLink } from 'react-router-dom';
 gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
@@ -63,13 +64,13 @@ const Hero = () => {
           </p>
           
           {/* CTA Buttons */}
-          <div className="flex flex-col md:w-120  md lg:w-auto sm:flex-row space-y-4 sm:space-y-0 mb-10 sm:space-x-4   " ref={buttonRef}>
-            <button className="bg-blue-600 text-white px-8 py-4 rounded-full font-bold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-transform">
+          <div className="flex flex-col md:w-120 justify-center align-center items-center lg:w-auto sm:flex-row space-y-4 sm:space-y-0 mb-10 sm:space-x-4   " ref={buttonRef}>
+            <NavLink to={"/login"} className="bg-blue-600 text-white    px-8 md:pr-6 md:pl-5 lg:px-8      py-4 rounded-full font-bold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-transform">
               Login to Your School
-            </button>
-            <button className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-full font-bold hover:bg-blue-50 transition-colors">
+            </NavLink>
+            <NavLink to={"/create-school"} className="border-2 border-blue-600 text-blue-600 px-8      px-8 md:pr-5 md:pl-3 lg:px-8  py-4 rounded-full font-bold hover:bg-blue-50 transition-colors">
               Create New School Account
-            </button>
+            </NavLink>
           </div>
           
           <p className="mt-6 text-gray-500  mb-10 italic">

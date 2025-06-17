@@ -1,8 +1,8 @@
 // src/pages/RequestSchool.js
 import React, { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
-import Header from '../Header';
-import Footer from '../Footer';
+import Header from './Header';
+import Footer from './Footer';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 

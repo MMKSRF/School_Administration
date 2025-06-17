@@ -1,15 +1,15 @@
 // src/App.js
-import React from 'react';
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 
-import Login from './Components/Ui/Login';
-import CreateSchool from './Components/Ui/CreateSchool';
+import Login from './Components/Pages/Login';
+import CreateSchool from './Components/Pages/CreateSchool';
 import Layout from './Pages/LayOut';
 import JoinSchool from './Components/Ui/JoinSchool';
-import RequestSchool from './Components/Ui/RequestSchool ';
+import RequestSchool from './Components/Pages/RequestSchool ';
 
 gsap.registerPlugin(ScrollTrigger);
 

@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 
-import Header from '../Components/Header';
-import Hero from '../Components/Hero';
-import Features from '../Components/Features';
-import HowItWorks from '../Components/HowItWorks';
-import Footer from '../Components/Footer';
+import Header from '../Components/Pages/Header';
+import Hero from '../Components/Pages/Hero';
+import Features from '../Components/Pages/Features';
+import HowItWorks from '../Components/Pages/HowItWorks';
+import Footer from '../Components/Pages/Footer';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
