@@ -1,6 +1,7 @@
-import React from 'react';
+import { useDispatch } from "react-redux";
 
 const Step2RequesterInfo = ({ formData, requesterRoles, handleInputChange, setStep }) => {
+  const dispatch = useDispatch();
   return (
     <div className="max-w-3xl mx-auto">
       <div className="text-center mb-10">
@@ -77,13 +78,13 @@ const Step2RequesterInfo = ({ formData, requesterRoles, handleInputChange, setSt
         
         <div className="mt-8 flex justify-between">
           <button 
-            onClick={() => setStep(1)}
+            onClick={() => dispatch(setStep(1))}
             className="py-3 px-6 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors"
           >
             Back to Recheck
           </button>
           <button 
-            onClick={() => setStep(3)}
+            onClick={() => dispatch(setStep(3))}
             className="py-3 px-6 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium hover:from-blue-600 hover:to-indigo-700 transition-colors"
           >
             Continue to School Info

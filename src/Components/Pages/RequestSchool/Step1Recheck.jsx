@@ -1,5 +1,5 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 const Step1Recheck = ({ 
   formData, 
@@ -10,6 +10,7 @@ const Step1Recheck = ({
   setStep,
   loading
 }) => {
+  const dispatch = useDispatch();
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
       <div className="text-center">
@@ -134,7 +135,7 @@ const Step1Recheck = ({
           </p>
           
           <NavLink
-            onClick={() => setStep(2)}
+            onClick={() => dispatch(setStep(2))}
             to={"/request-school"}
             className="w-full py-4 px-6 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold 
               shadow-md transition-all duration-300 transform hover:from-blue-600 hover:to-indigo-700"

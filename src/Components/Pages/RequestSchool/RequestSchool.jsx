@@ -58,8 +58,10 @@ const RequestSchool = () => {
       <Header />
       
       <section ref={sectionRef} className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+
+
+         <div className="container mx-auto px-4">
+          {step <= 2 &&  <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Request Your School to Join Aqimari
             </h1>
@@ -67,7 +69,7 @@ const RequestSchool = () => {
               If your school is not yet on Aqimari, you can request it to be added
             </p>
           </div>
-          
+          }
           {/* Progress indicator */}
           {!success && step > 1 && (
             <ProgressIndicator step={step} />

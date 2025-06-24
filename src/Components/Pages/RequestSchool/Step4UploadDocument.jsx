@@ -1,5 +1,5 @@
-import React from 'react';
 
+import { useDispatch } from "react-redux";
 const Step4UploadDocument = ({ 
   formData, 
   handleFileChange, 
@@ -7,6 +7,7 @@ const Step4UploadDocument = ({
   setStep,
   loading 
 }) => {
+  const dispatch = useDispatch();
   return (
     <div className="max-w-3xl mx-auto">
       <div className="text-center mb-10">
@@ -79,7 +80,7 @@ const Step4UploadDocument = ({
         
         <div className="mt-4 text-center">
           <button 
-            onClick={() => setStep(3)}
+            onClick={() => dispatch(setStep(3))}
             className="text-gray-600 hover:text-gray-800 transition-colors"
           >
             Back to School Information

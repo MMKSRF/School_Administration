@@ -1,27 +1,79 @@
-import { useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
 
+import { useDispatch, useSelector } from 'react-redux';
+
+
+import {
+  // selectFormData,
+
+  selectFullName,
+  selectGradeLevel,
+  selectSection,
+  selectStudentId,
+  selectParentContact,
+  selectSubjectsTaught,
+  selectPhoneNumber,
+  selectEmail,
+  selectTeacherId,
+  selectPassword,
+  selectConfirmPassword,
+
+  selectStep,
+  selectSelectedSchool,
+  selectRole,
+  selectLoading,
+  selectSuccess
+
+} from '../../../Redux/Selectors/joinSchoolSelectors.js';
+
+
+import {
+  setFormData,
+  setStep,
+  setSelectedSchool,
+  setRole,
+  setLoading,
+  setSuccess,
+} from '../../../Redux/Slices/joinSchoolSlice.js'
+
+
 const useJoinSchoolForm = () => {
-  const [step, setStep] = useState(1);
-  const [selectedSchool, setSelectedSchool] = useState(null);
-  const [role, setRole] = useState(null);
-  const [formData, setFormData] = useState({
-    fullName: '',
-    gradeLevel: '',
-    section: '',
-    studentId: '',
-    parentContact: '',
-    subjectsTaught: '',
-    phoneNumber: '',
-    email: '',
-    teacherId: '',
-    password: '',
-    confirmPassword: ''
-  });
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+
   const navigate = useNavigate();
-  
+  const dispatch = useDispatch();
+
+
+  // const [step, setStep] = useState(1);
+  // const [selectedSchool, setSelectedSchool] = useState(null);
+  // const [role, setRole] = useState(null);
+
+
+  const step = useSelector(selectStep);
+  const selectedSchool = useSelector(selectSelectedSchool);
+  const role = useSelector(selectRole);
+
+
+  const formData= {
+    fullName: useSelector(selectFullName),
+    gradeLevel: useSelector(selectGradeLevel),
+    section: useSelector(selectSection),
+    studentId: useSelector(selectStudentId),
+    parentContact: useSelector(selectParentContact),
+    subjectsTaught: useSelector(selectSubjectsTaught),
+    phoneNumber: useSelector(selectPhoneNumber),
+    email: useSelector(selectEmail),
+    teacherId: useSelector(selectTeacherId),
+    password: useSelector(selectPassword),
+    confirmPassword: useSelector(selectConfirmPassword),
+  }
+  // const [loading, setLoading] = useState(false);
+  // const [success, setSuccess] = useState(false);
+
+  const loading = useSelector(selectLoading);
+  const success = useSelector(selectSuccess);
+
+
   // Sample schools data
   const schools = [
     { id: 1, name: "Addis Ababa Science & Technology University", region: "Addis Ababa" },
@@ -42,7 +94,7 @@ const useJoinSchoolForm = () => {
   
   // Sections A-F
   const sections = ["A", "B", "C", "D", "E", "F"];
-  
+
   // Subjects for teachers
   const subjects = [
     "Mathematics", "Physics", "Chemistry", "Biology", 
@@ -53,12 +105,16 @@ const useJoinSchoolForm = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+
+    dispatch(setFormData( {  [name]: value }))
+
   };
+
+
+
   
   const handleSubjectChange = (subject) => {
-    setFormData(prev => {
-      const currentSubjects = prev.subjectsTaught.split(',').filter(s => s);
+      const currentSubjects = formData.subjectsTaught.split(',').filter(s => s);
       const index = currentSubjects.indexOf(subject);
       
       if (index > -1) {
@@ -66,19 +122,26 @@ const useJoinSchoolForm = () => {
       } else {
         currentSubjects.push(subject);
       }
-      
-      return { ...prev, subjectsTaught: currentSubjects.join(',') };
-    });
+      dispatch(setFormData( { subjectsTaught: currentSubjects.join(',') }))
+
   };
+
+
+
+
   
   const handleSchoolSelect = (school) => {
-    setSelectedSchool(school);
-    setStep(2);
+    dispatch(setSelectedSchool({school}))
+    dispatch(setStep(2));
   };
+
+
+
+
   
   const handleRoleSelect = (selectedRole) => {
-    setRole(selectedRole);
-    setStep(3);
+    dispatch(setRole(selectedRole))
+    dispatch(setStep(3))
   };
   
   const handleSubmit = (e) => {
@@ -112,15 +175,15 @@ const useJoinSchoolForm = () => {
     }
     
     // Simulate form submission
-    setLoading(true);
+    dispatch(setLoading(true))
     setTimeout(() => {
-      setLoading(false);
-      setSuccess(true);
+      dispatch(setLoading(false))
+      dispatch(setSuccess(true))
       
       // Redirect after success
       setTimeout(() => {
         navigate('/');
-      }, 3000);
+      }, 10000);
     }, 2000);
   };
 

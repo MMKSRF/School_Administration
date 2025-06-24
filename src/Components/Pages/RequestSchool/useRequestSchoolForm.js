@@ -1,39 +1,90 @@
-import { useState } from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  // selectFormData,
+
+  selectSearchSchool,
+  selectSearchRegion,
+
+  selectFullName,
+  selectRequesterRole,
+  selectPhoneNumber,
+  selectEmail,
+
+  selectSchoolName,
+  selectSchoolType,
+  selectGradeRange,
+  selectRegion,
+  selectSubCity,
+  selectWoreda,
+  selectSchoolEmail,
+  selectSchoolPhone,
+  selectSchoolWebsite,
+  selectNotes,
+
+  selectDocument,
+
+
+  selectStep,
+  selectSearchResults,
+  selectSchoolFound,
+  selectLoading,
+  selectSuccess,
+
+
+
+} from '../../../Redux/Selectors/requestSchoolSelectors.js'
+
+import {
+  setFormData,
+  setStep,
+  setSearchResults,
+  setSchoolFound,
+  setLoading,
+  setSuccess,
+} from '../../../Redux/Slices/requestSchoolSlice.js'
+
 
 const useRequestSchoolForm = () => {
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
+
+  const dispatch = useDispatch();
+
+
+  const formData = {
     // Step 1: Recheck fields
-    searchSchool: '',
-    searchRegion: '',
-    
+    searchSchool: useSelector(selectSearchSchool),
+    searchRegion: useSelector(selectSearchRegion),
+
     // Step 2: Requester Info
-    fullName: '',
-    requesterRole: '',
-    phoneNumber: '',
-    email: '',
-    
+    fullName: useSelector(selectFullName),
+    requesterRole: useSelector(selectRequesterRole),
+    phoneNumber: useSelector(selectPhoneNumber),
+    email: useSelector(selectEmail),
+
     // Step 3: School Info
-    schoolName: '',
-    schoolType: '',
-    gradeRange: '',
-    region: '',
-    subCity: '',
-    woreda: '',
-    schoolEmail: '',
-    schoolPhone: '',
-    schoolWebsite: '',
-    notes: '',
-    
+    schoolName: useSelector(selectSchoolName),
+    schoolType: useSelector(selectSchoolType),
+    gradeRange: useSelector(selectGradeRange),
+    region: useSelector(selectRegion),
+    subCity: useSelector(selectSubCity),
+    woreda: useSelector(selectWoreda),
+    schoolEmail: useSelector(selectSchoolEmail),
+    schoolPhone: useSelector(selectSchoolPhone),
+    schoolWebsite: useSelector(selectSchoolWebsite),
+    notes: useSelector(selectNotes),
+
     // Step 4: Upload
-    document: null
-  });
-  
-  const [searchResults, setSearchResults] = useState([]);
-  const [schoolFound, setSchoolFound] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  
+    document: useSelector(selectDocument),
+  };
+
+
+  const step = useSelector(selectStep);
+
+  const searchResults = useSelector(selectSearchResults);
+  const schoolFound = useSelector(selectSchoolFound);
+  const loading = useSelector(selectLoading);
+  const success = useSelector(selectSuccess);
+
+
   // Sample schools data
   const schools = [
     { id: 1, name: "Addis Ababa Science & Technology University", region: "Addis Ababa", type: "University" },
@@ -43,7 +94,9 @@ const useRequestSchoolForm = () => {
     { id: 5, name: "Jimma Preparatory School", region: "Oromia", type: "Secondary" },
     { id: 6, name: "Dire Dawa Secondary School", region: "Dire Dawa", type: "Secondary" },
   ];
-  
+
+
+
   // Ethiopian regions
   const regions = [
     "Addis Ababa", "Afar", "Amhara", "Benishangul-Gumuz", 
@@ -51,7 +104,9 @@ const useRequestSchoolForm = () => {
     "Sidama", "Somali", "South West Ethiopia", 
     "Southern Nations, Nationalities, and Peoples", "Tigray"
   ];
-  
+
+
+
   // School types
   const schoolTypes = [
     "Kindergarten (KG)", 
@@ -61,7 +116,10 @@ const useRequestSchoolForm = () => {
     "University/College", 
     "Vocational/Training Institute"
   ];
-  
+
+
+
+
   // Grade ranges
   const gradeRanges = [
     "KG only",
@@ -72,7 +130,11 @@ const useRequestSchoolForm = () => {
     "Grade 1 to Grade 12",
     "Grade 9 to Grade 12"
   ];
-  
+
+
+
+
+
   // Requester roles
   const requesterRoles = [
     "Student",
@@ -82,16 +144,25 @@ const useRequestSchoolForm = () => {
     "Administrator",
     "Other"
   ];
-  
+
+
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    dispatch(setFormData({ [name]: value }));
   };
-  
+
+
+
+
   const handleFileChange = (e) => {
-    setFormData(prev => ({ ...prev, document: e.target.files[0] }));
+    dispatch(setFormData( { document: e.target.files[0] }))
   };
-  
+
+
+
+
   const handleRecheck = () => {
     if (!formData.searchSchool) {
       alert("Please enter a school name to search");
@@ -99,9 +170,10 @@ const useRequestSchoolForm = () => {
     }
     
     // Simulate search
-    setLoading(true);
+    dispatch(setLoading(true))
     setTimeout(() => {
-      setLoading(false);
+      dispatch(setLoading(false))
+
       
       // Filter schools based on search criteria
       const results = schools.filter(school => 
@@ -109,16 +181,19 @@ const useRequestSchoolForm = () => {
         (!formData.searchRegion || school.region === formData.searchRegion)
       );
       
-      setSearchResults(results);
+      dispatch(setSearchResults(results))
       
       if (results.length > 0) {
-        setSchoolFound(true);
+        dispatch(setSchoolFound(true))
       } else {
-        setSchoolFound(false);
+        dispatch(setSchoolFound(false))
       }
     }, 1000);
   };
-  
+
+
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -139,12 +214,16 @@ const useRequestSchoolForm = () => {
     }
     
     // Simulate form submission
-    setLoading(true);
+    dispatch(setLoading(true))
     setTimeout(() => {
-      setLoading(false);
-      setSuccess(true);
+      dispatch(setLoading(false))
+      dispatch(setSuccess(true))
     }, 2000);
   };
+
+
+
+
 
   return {
     step,

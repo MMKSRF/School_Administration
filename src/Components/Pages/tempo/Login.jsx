@@ -2,11 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { Link, NavLink } from 'react-router-dom';
-import Header from './Header';
-import Footer from './Footer';
-import TopSection from '../Ui/TopSection';
-import BenefitsSection from '../Ui/BenefitsSection';
-import BasicInput from '../Ui/BasicInput';
+import Header from '../Header.jsx';
+import Footer from '../Footer.jsx';
+import TopSection from '../../Ui/TopSection.jsx';
+import BenefitsSection from '../../Ui/BenefitsSection.jsx';
+import BasicInput from '../../Ui/BasicInput.jsx';
 
 const Login = () => {
   const [formData, setFormData] = useState({

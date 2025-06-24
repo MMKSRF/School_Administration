@@ -1,4 +1,5 @@
 import React from 'react';
+import {useDispatch} from "react-redux";
 
 const Step2IdentityVerification = ({ 
   formData, 
@@ -10,6 +11,8 @@ const Step2IdentityVerification = ({
   setStep,
   loading
 }) => {
+
+  const dispatch = useDispatch();
   return (
     <div className="space-y-6 form-section">
       <div className="text-center mb-6">
@@ -93,7 +96,7 @@ const Step2IdentityVerification = ({
       
       <div className="pt-4 text-center">
         <button 
-          onClick={() => setStep(1)}
+          onClick={() => dispatch(setStep(1))}
           className="text-gray-600 hover:text-gray-800 transition-colors flex items-center justify-center"
         >
           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

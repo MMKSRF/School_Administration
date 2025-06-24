@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const SuccessMessage = ({ school, role }) => {
+    // console.log("school : ", school);
   return (
     <div className="max-w-2xl mx-auto text-center py-20">
       <div className="flex justify-center mb-6">
@@ -14,7 +15,7 @@ const SuccessMessage = ({ school, role }) => {
       
       <h2 className="text-3xl font-bold text-gray-800 mb-4">Request Submitted Successfully!</h2>
       <p className="text-gray-600 text-lg mb-8 max-w-xl mx-auto">
-        Your request to join {school.name} as a {role} has been submitted. 
+        Your request to join {school.school.name} as a {role} has been submitted.
         You'll receive access to your dashboard once approved by the school administrator.
       </p>
       

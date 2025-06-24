@@ -1,4 +1,5 @@
 import React from 'react';
+import {useDispatch} from "react-redux";
 
 const Step3PasswordReset = ({ 
   formData, 
@@ -8,6 +9,8 @@ const Step3PasswordReset = ({
   setStep,
   loading
 }) => {
+
+  const dispatch = useDispatch();
   return (
     <div className="space-y-6 form-section">
       <div className="text-center mb-6">
@@ -102,7 +105,7 @@ const Step3PasswordReset = ({
       
       <div className="pt-4 text-center">
         <button 
-          onClick={() => setStep(2)}
+          onClick={() => dispatch(setStep(2))}
           className="text-gray-600 hover:text-gray-800 transition-colors flex items-center justify-center"
         >
           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

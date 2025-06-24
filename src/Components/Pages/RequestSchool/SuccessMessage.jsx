@@ -1,4 +1,3 @@
-import React from 'react';
 
 const SuccessMessage = ({ schoolName }) => {
   return (
@@ -13,7 +12,7 @@ const SuccessMessage = ({ schoolName }) => {
       
       <h2 className="text-3xl font-bold text-gray-800 mb-4">Request Submitted Successfully!</h2>
       <p className="text-gray-600 text-lg mb-8 max-w-xl mx-auto">
-        Thank you! We've received your request to add <span className="font-semibold">{schoolName}</span> to Aqimari. 
+        Thank you! We've received your request to add <span className="font-semibold ">{schoolName}</span> to Aqimari. 
         We'll review your request and contact the school shortly. You'll be notified when your school is onboarded.
       </p>
       
