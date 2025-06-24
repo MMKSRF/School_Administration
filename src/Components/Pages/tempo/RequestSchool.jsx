@@ -5,7 +5,7 @@ import Header from './Header';
 import Footer from './Footer';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
-
+import { NavLink } from 'react-router-dom';
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const RequestSchool = () => {
@@ -303,13 +303,14 @@ const RequestSchool = () => {
                   We couldn't find your school in our system. You can request to add it below.
                 </p>
                 
-                <button
+                <NavLink
                   onClick={() => setStep(2)}
+                  to={"/request-school"}
                   className="w-full py-4 px-6 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold 
                     shadow-md transition-all duration-300 transform hover:from-blue-600 hover:to-indigo-700"
                 >
                   Request Your School to Join Aqimari
-                </button>
+                </NavLink>
               </div>
             )}
           </div>

@@ -1,9 +1,9 @@
 // src/pages/JoinSchool.js
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
-import Header from '../Pages/Header';
-import Footer from '../Pages/Footer';
+import Header from './Header';
+import Footer from './Footer';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 
@@ -226,9 +226,9 @@ const JoinSchool = () => {
             <div className="mt-8 text-center">
               <p className="text-gray-600">
                 Can't find your school?{' '}
-                <button className="text-blue-600 font-medium hover:text-blue-800 transition-colors">
-                  Request your school to join Aqimari
-                </button>
+                <NavLink to="/request-school" className="text-blue-600 font-medium hover:text-blue-800 transition-colors">
+                 Recheck or Request your school to join Aqimari
+                </NavLink>
               </p>
             </div>
           </div>

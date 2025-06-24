@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-
+import { useLocation, useNavigate } from 'react-router-dom'; // ✅ NEW
 import Header from '../Components/Pages/Header';
 import Hero from '../Components/Pages/Hero';
 import Features from '../Components/Pages/Features';
@@ -11,11 +11,13 @@ import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-
 function Layout() {
   const sectionRefs = useRef([]);
+  const location = useLocation(); // ✅
+  const navigate = useNavigate(); // ✅
 
   useEffect(() => {
+    // Animate sections on scroll
     sectionRefs.current.forEach((section) => {
       gsap.fromTo(
         section,
@@ -33,14 +35,24 @@ function Layout() {
       );
     });
 
-    gsap.from('.logo', {
-      duration: 1.2,
-      opacity: 0,
-      scale: 0.8,
-      rotation: 10,
-      ease: 'elastic.out(1, 0.75)',
-    });
-  }, []);
+    // ✅ Scroll to section if URL has search param like ?scrollTo=features
+    const params = new URLSearchParams(location.search);
+    const targetId = params.get('scrollTo');
+    if (targetId) {
+      const element = document.getElementById(targetId);
+      if (element) {
+        gsap.to(window, {
+          duration: 1,
+          scrollTo: element,
+          ease: 'power2.inOut',
+          onComplete: () => {
+            // ✅ Clean the URL (remove the ?scrollTo=...)
+            navigate(location.pathname, { replace: true });
+          },
+        });
+      }
+    }
+  }, [location, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white font-sans">
@@ -64,5 +76,5 @@ function Layout() {
     </div>
   );
 }
-export default Layout;
 
+export default Layout;

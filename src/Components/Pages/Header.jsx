@@ -65,21 +65,25 @@ const Header = () => {
       className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-sm py-4 transition-all duration-300"
     >
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <div className="flex items-center space-x-3">
+        <NavLink to={"/"} className="flex items-center space-x-3">
           <Logo />
           <span className="text-2xl font-bold text-blue-600">Aqimari</span>
-        </div>
+        </NavLink>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8">
           {['about', 'features', 'how-it-works'].map((item) => (
             <NavLink
               key={item}
+               to={{
+                      pathname: '/',
+                      search: `?scrollTo=${item}`,
+                    }}
               onClick={() => scrollToSection(item)}
               className={`font-medium capitalize transition-colors cursor-pointer ${
                 activeSection === item ? 'text-blue-600' : 'text-gray-700'
               } hover:text-blue-600 active:text-blue-400 focus:text-blue-600`}
-              to={`/${item}`}
+
             >
               {item.replace('-', ' ')}
             </NavLink>
@@ -114,15 +118,19 @@ const Header = () => {
         <nav className="md:hidden bg-white py-4 px-4 shadow-lg">
           <div className="flex flex-col space-y-4">
             {['about', 'features', 'how-it-works'].map((item) => (
-              <button
+              <NavLink
                 key={item}
+                to={{
+                      pathname: '/',
+                      search: `?scrollTo=${item}`,
+                    }}
                 onClick={() => scrollToSection(item)}
                 className={`font-medium capitalize text-left transition-colors py-2 ${
                   activeSection === item ? 'text-blue-600' : 'text-gray-700'
                 } hover:text-blue-600`}
               >
                 {item.replace('-', ' ')}
-              </button>
+              </NavLink>
             ))}
             <button
               onClick={() => scrollToSection('contact')}
