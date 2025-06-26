@@ -4,7 +4,7 @@
         formData:{ 
             schoolName: '',
             schoolId: '',
-            email: '',
+            email: '', //This is the school Email 
             adminName: '',
             adminEmail: '',
             password: '',
@@ -13,6 +13,7 @@
             region: '',
             phoneNumber: '',
             schoolSize: '',
+            role: 'admin',
             
             academicLevels: [],},
             

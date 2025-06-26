@@ -5,7 +5,7 @@ import { useSelector , useDispatch} from 'react-redux';
 
 
 
-import {selectPassword,selectSchoolId,selectLoading,selectErrors,selectShowPassword,selectNewErrors} from '../../../Redux/Selectors/loginSelectors';
+import {selectPassword,selectSchoolId,selectLoading,selectErrors,selectShowPassword,selectNewErrors,selectUserId} from '../../../Redux/Selectors/loginSelectors';
 import { setFormData as setFormDataRedux  ,setErrors, setLoading, setShowPassword ,setNewErrors} from '../../../Redux/Slices/loginSlice'
 
 
@@ -15,6 +15,7 @@ const LoginForm = () => {
 
   const formData = {
     schoolId: useSelector(selectSchoolId) || '',
+    userId: useSelector(selectUserId) || '',
     password: useSelector(selectPassword) || ''
   };
 
@@ -43,35 +44,38 @@ const LoginForm = () => {
     dispatch(setShowPassword(!showPassword))
   };
   
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // Simple validation
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    dispatch(setNewErrors({})); // Clear previous new errors
+  let validationErrors = {};
 
-    if (!formData.schoolId.trim()) {
-      dispatch(setNewErrors({schoolId:'School ID is required'}))
-    }
-    if (!formData.password) {
-      dispatch(setNewErrors({password:'Password is required'}))
-    } else if (formData.password.length < 6) {
-      dispatch(setNewErrors({password:'Password must be at least 6 characters'}))
-    }
-    
-    if (Object.keys(newErrors).length > 0) {
-      dispatch(setErrors(newErrors))
-      return;
-    }
-    
-    // Simulate login process
-    dispatch(setLoading(true))
-    setTimeout(() => {
-      dispatch(setLoading(false))
-      // In a real app, you would redirect to dashboard here
-      alert('Login successful! Redirecting to dashboard...');
-    }, 1500);
-  };
+  if (!formData.schoolId.trim()) {
+    validationErrors.schoolId = 'School ID is required';
+  }
+  if (!formData.userId.trim()) {
+    validationErrors.userId = 'User ID is required';
+  }
+  if (!formData.password) {
+    validationErrors.password = 'Password is required';
+  } else if (formData.password.length < 6) {
+    validationErrors.password = 'Password must be at least 6 characters';
+  }
+
+  // If there are errors, show them and stop
+  if (Object.keys(validationErrors).length > 0) {
+    dispatch(setErrors(validationErrors));
+    return;
+  }
+
+  // Simulate login process
+  dispatch(setLoading(true));
+  setTimeout(() => {
+    dispatch(setLoading(false));
+    alert('Login successful! Redirecting to dashboard...');
+    // Example: navigate('/dashboard');
+  }, 1500);
+};
+
 
   return (
     <form onSubmit={handleSubmit}>
@@ -89,6 +93,22 @@ const LoginForm = () => {
           </svg>}
         />
         
+
+
+        <BasicInput
+          label='User Id'
+          type="text"
+          name="userId"
+          placeholder="Enter your ID"
+          value={formData.userId}
+          onChange={handleChange}
+          error={errors.userId}
+          icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+</svg>
+}
+        />
+
         <BasicInput
           label='Password'
           type={showPassword ? "text" : "password"}
