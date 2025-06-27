@@ -4,18 +4,19 @@
         formData:{ 
             schoolName: '',
             schoolId: '',
-            email: '', //This is the school Email 
+            email: '', //This is the school Email
             adminName: '',
             adminEmail: '',
             password: '',
             confirmPassword: '',
-            schoolType: '',
-            region: '',
-            phoneNumber: '',
+            schoolType: '', // USELESS
+            region: '', // USELESS
+            phoneNumber: '', // The school phone number
             schoolSize: '',
             role: 'admin',
+
             
-            academicLevels: [],},
+            academicLevels: [] ,},// USELESS
             
             loading: false,
             success: false,
