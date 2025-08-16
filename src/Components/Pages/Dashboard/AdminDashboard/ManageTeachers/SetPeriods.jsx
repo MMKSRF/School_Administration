@@ -1,168 +1,301 @@
-// src/AdminDashboard/ManagePeriods/SetPeriods.jsx
-import React, { useState } from 'react';
+// src/Components/Pages/Dashboard/AdminDashboard/ManageTeachers/SetPeriods.jsx
+import React, { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchPeriods, addPeriod, updatePeriod, deletePeriod } from '../../../../../Redux/Slices/teachersSlice';
+import { FaPlus, FaTrash, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
 
 const SetPeriods = () => {
-  const [periods, setPeriods] = useState([
-    { id: 1, name: 'Period 1', start: '08:00', end: '08:45' },
-    { id: 2, name: 'Period 2', start: '08:50', end: '09:35' },
-    { id: 3, name: 'Period 3', start: '09:40', end: '10:25' },
-    { id: 4, name: 'Period 4', start: '10:30', end: '11:15' },
-    { id: 5, name: 'Break', start: '11:15', end: '11:45' },
-    { id: 6, name: 'Period 5', start: '11:45', end: '12:30' },
-    { id: 7, name: 'Period 6', start: '12:35', end: '13:20' },
-    { id: 8, name: 'Period 7', start: '13:25', end: '14:10' },
-  ]);
-  
+  const dispatch = useDispatch();
+  const { periods, status, error } = useSelector(state => state.teachers);
+  const containerRef = useRef();
+  const [editingId, setEditingId] = useState(null);
   const [newPeriod, setNewPeriod] = useState({
     name: '',
-    start: '',
-    end: ''
+    startTime: '08:00',
+    endTime: '09:00'
   });
-  
-  const handleInputChange = (id, field, value) => {
-    setPeriods(prev => prev.map(period => 
-      period.id === id ? { ...period, [field]: value } : period
-    ));
+  const [editData, setEditData] = useState({});
+
+  useEffect(() => {
+    dispatch(fetchPeriods());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from('.period-row', {
+        y: 20,
+        opacity: 100,
+        stagger: 0.1,
+        duration: 0.4,
+        ease: 'power2.out'
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, [periods]);
+
+  const handleAddPeriod = () => {
+    if (newPeriod.name && newPeriod.startTime && newPeriod.endTime) {
+      dispatch(addPeriod(newPeriod));
+      setNewPeriod({
+        name: '',
+        startTime: '08:00',
+        endTime: '09:00'
+      });
+    }
   };
-  
-  const handleNewPeriodChange = (e) => {
+
+  const handleEdit = (period) => {
+    setEditingId(period.id);
+    setEditData({
+      name: period.name,
+      startTime: period.startTime,
+      endTime: period.endTime
+    });
+  };
+
+  const handleSaveEdit = (id) => {
+    dispatch(updatePeriod({ id, ...editData }));
+    setEditingId(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleNewChange = (e) => {
     const { name, value } = e.target;
     setNewPeriod(prev => ({ ...prev, [name]: value }));
   };
-  
-  const addPeriod = () => {
-    if (newPeriod.name && newPeriod.start && newPeriod.end) {
-      setPeriods(prev => [
-        ...prev, 
-        { 
-          id: prev.length + 1, 
-          ...newPeriod 
-        }
-      ]);
-      setNewPeriod({ name: '', start: '', end: '' });
-    }
+
+  const formatTimeDisplay = (timeStr) => {
+    const [hours, minutes] = timeStr.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minutes} ${ampm}`;
   };
-  
-  const removePeriod = (id) => {
-    setPeriods(prev => prev.filter(period => period.id !== id));
+
+  const validateTimeOrder = (start, end) => {
+    return start < end;
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
-      <h2 className="text-xl md:text-2xl font-bold text-gray-700 mb-6">Set Period Times</h2>
-      
-      <div className="mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4 mb-4">
-          <div className="md:col-span-1">
+    <div ref={containerRef} className="bg-white rounded-2xl shadow-xl p-6">
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">School Periods Configuration</h2>
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl">
+          {error}
+        </div>
+      )}
+
+      {/* Add New Period */}
+      <div className="mb-8 p-4 bg-gray-50 rounded-xl">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Period</h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Period Name</label>
             <input
               type="text"
               name="name"
               value={newPeriod.name}
-              onChange={handleNewPeriodChange}
-              placeholder="e.g., Period 1"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onChange={handleNewChange}
+              placeholder="e.g., Period 1, Morning Session"
+              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
             <input
               type="time"
-              name="start"
-              value={newPeriod.start}
-              onChange={handleNewPeriodChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              name="startTime"
+              value={newPeriod.startTime}
+              onChange={handleNewChange}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
             <input
               type="time"
-              name="end"
-              value={newPeriod.end}
-              onChange={handleNewPeriodChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              name="endTime"
+              value={newPeriod.endTime}
+              onChange={handleNewChange}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
           <div className="flex items-end">
             <button
-              onClick={addPeriod}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+              onClick={handleAddPeriod}
+              disabled={!newPeriod.name || !newPeriod.startTime || !newPeriod.endTime || 
+                      !validateTimeOrder(newPeriod.startTime, newPeriod.endTime)}
+              className={`px-4 py-2 rounded-lg flex items-center ${
+                !newPeriod.name || !newPeriod.startTime || !newPeriod.endTime || 
+                !validateTimeOrder(newPeriod.startTime, newPeriod.endTime)
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-indigo-600 text-white hover:bg-indigo-700'
+              }`}
             >
+              <FaPlus className="mr-2" />
               Add Period
             </button>
           </div>
         </div>
+        {!validateTimeOrder(newPeriod.startTime, newPeriod.endTime) && (
+          <p className="mt-2 text-sm text-red-600">End time must be after start time</p>
+        )}
       </div>
-      
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Period</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Start Time</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">End Time</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Duration</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {periods.map(period => {
-              const start = new Date(`2000-01-01T${period.start}:00`);
-              const end = new Date(`2000-01-01T${period.end}:00`);
-              const duration = (end - start) / (1000 * 60);
-              
-              return (
-                <tr key={period.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <input
-                      type="text"
-                      value={period.name}
-                      onChange={(e) => handleInputChange(period.id, 'name', e.target.value)}
-                      className="w-full px-2 py-1 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
+
+      {/* Periods List */}
+      {status === 'loading' ? (
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="h-16 bg-gray-100 rounded-xl animate-pulse"></div>
+          ))}
+        </div>
+      ) : periods.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="text-gray-400 mb-4">No periods configured</div>
+          <p className="text-gray-500">Add your school's daily periods using the form above</p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Period Name
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Time Range
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Duration
+                </th>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {periods.map((period) => (
+                <tr key={period.id} className="period-row hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {editingId === period.id ? (
+                      <input
+                        type="text"
+                        name="name"
+                        value={editData.name}
+                        onChange={handleEditChange}
+                        className="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    ) : (
+                      <div className="text-sm font-medium text-gray-900">{period.name}</div>
+                    )}
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <input
-                      type="time"
-                      value={period.start}
-                      onChange={(e) => handleInputChange(period.id, 'start', e.target.value)}
-                      className="px-2 py-1 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {editingId === period.id ? (
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="time"
+                          name="startTime"
+                          value={editData.startTime}
+                          onChange={handleEditChange}
+                          className="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                        <span>to</span>
+                        <input
+                          type="time"
+                          name="endTime"
+                          value={editData.endTime}
+                          onChange={handleEditChange}
+                          className="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                      </div>
+                    ) : (
+                      <div className="text-sm text-gray-500">
+                        {formatTimeDisplay(period.startTime)} - {formatTimeDisplay(period.endTime)}
+                      </div>
+                    )}
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <input
-                      type="time"
-                      value={period.end}
-                      onChange={(e) => handleInputChange(period.id, 'end', e.target.value)}
-                      className="px-2 py-1 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {calculateDuration(period.startTime, period.endTime)}
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {duration} minutes
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                    <button 
-                      onClick={() => removePeriod(period.id)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      Remove
-                    </button>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    {editingId === period.id ? (
+                      <div className="flex justify-end space-x-2">
+                        <button
+                          onClick={() => handleSaveEdit(period.id)}
+                          disabled={!editData.name || !editData.startTime || !editData.endTime || 
+                                    !validateTimeOrder(editData.startTime, editData.endTime)}
+                          className={`p-2 rounded-lg ${
+                            !editData.name || !editData.startTime || !editData.endTime || 
+                            !validateTimeOrder(editData.startTime, editData.endTime)
+                              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                              : 'bg-green-100 text-green-700 hover:bg-green-200'
+                          }`}
+                        >
+                          <FaSave />
+                        </button>
+                        <button
+                          onClick={handleCancelEdit}
+                          className="p-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                        >
+                          <FaTimes />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex justify-end space-x-2">
+                        <button
+                          onClick={() => handleEdit(period)}
+                          className="p-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (window.confirm('Are you sure you want to delete this period?')) {
+                              dispatch(deletePeriod(period.id));
+                            }
+                          }}
+                          className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-      
-      <div className="mt-6 flex justify-end">
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md">
-          Save Periods
-        </button>
-      </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
+
+// Helper function to calculate duration between two times
+function calculateDuration(startTime, endTime) {
+  const [startHour, startMinute] = startTime.split(':').map(Number);
+  const [endHour, endMinute] = endTime.split(':').map(Number);
+  
+  let hours = endHour - startHour;
+  let minutes = endMinute - startMinute;
+  
+  if (minutes < 0) {
+    hours -= 1;
+    minutes += 60;
+  }
+  
+  return `${hours}h ${minutes}m`;
+}
 
 export default SetPeriods;

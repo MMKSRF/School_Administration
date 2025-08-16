@@ -1,205 +1,165 @@
-// src/AdminDashboard/DashboardHome.jsx
-import React, { useRef, useEffect } from 'react';
+// src/Components/Pages/Dashboard/AdminDashboard/DashboardHome.jsx
+import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { Link } from 'react-router-dom';
-import WelcomeBanner from './DashboardWidgets/WelcomeBanner';
-import SchoolStats from './DashboardWidgets/SchoolStats';
+import { 
+  FaUsers, 
+  FaChalkboardTeacher, 
+  FaSchool, 
+  FaChartLine,
+  FaCalendarAlt,
+  FaFileExport,
+  FaCog
+} from 'react-icons/fa';
 
 const DashboardHome = () => {
-  const contentRef = useRef();
+  const containerRef = useRef();
   
   useEffect(() => {
-    gsap.from(contentRef.current.children, {
-      y: 0,
-      opacity: 100,
-      stagger: 0.1,
-      duration: 0.8,
-      ease: 'power2.out',
-      delay: 0.3
-    });
+    const ctx = gsap.context(() => {
+      gsap.from('.welcome-section', {
+        y: 20,
+        opacity: 100,
+        duration: 0.6,
+        ease: 'power2.out'
+      });
+      
+      gsap.from('.stat-card', {
+        y: 20,
+        opacity: 100,
+        stagger: 0.1,
+        duration: 0.5,
+        delay: 0.3,
+        ease: 'power2.out'
+      });
+      
+      gsap.from('.quick-action', {
+        y: 10,
+        opacity: 100,
+        stagger: 0.1,
+        duration: 0.4,
+        delay: 0.6,
+        ease: 'back.out(1.2)'
+      });
+    }, containerRef);
+    
+    return () => ctx.revert();
   }, []);
+
+  const stats = [
+    { value: '1,248', label: 'Total Students', icon: <FaUsers className="text-indigo-500" />, change: '+3.2%' },
+    { value: '58', label: 'Teaching Staff', icon: <FaChalkboardTeacher className="text-indigo-500" />, change: '+1.8%' },
+    { value: '42', label: 'Active Classes', icon: <FaSchool className="text-indigo-500" />, change: '0%' },
+    { value: '94.5%', label: 'Attendance Rate', icon: <FaChartLine className="text-indigo-500" />, change: '-0.7%' }
+  ];
 
   const quickActions = [
     { 
-      title: 'Add New Teacher', 
-      description: 'Add a new teacher to your school staff', 
-      icon: '👩‍🏫',
-      path: '/admin-dashboard/teachers',
-      color: 'bg-blue-100 text-blue-700 border-blue-200'
+      title: 'Schedule Management', 
+      icon: <FaCalendarAlt className="text-indigo-600 text-xl" />,
+      link: '/admin/schedule',
+      color: 'bg-indigo-100'
     },
     { 
-      title: 'Set Period Times', 
-      description: 'Configure your school schedule periods', 
-      icon: '⏰',
-      path: '/admin-dashboard/periods',
-      color: 'bg-green-100 text-green-700 border-green-200'
+      title: 'Create Reports', 
+      icon: <FaFileExport className="text-indigo-600 text-xl" />,
+      link: '/admin/reports',
+      color: 'bg-green-100'
     },
     { 
-      title: 'Create Schedule', 
-      description: 'Generate or edit your school timetable', 
-      icon: '📅',
-      path: '/admin-dashboard/schedule/create',
-      color: 'bg-purple-100 text-purple-700 border-purple-200'
-    },
-    { 
-      title: 'Check Conflicts', 
-      description: 'Resolve timetable scheduling issues', 
-      icon: '⚠️',
-      path: '/admin-dashboard/conflicts',
-      color: 'bg-yellow-100 text-yellow-800 border-yellow-200'
+      title: 'System Settings', 
+      icon: <FaCog className="text-indigo-600 text-xl" />,
+      link: '/admin/settings',
+      color: 'bg-purple-100'
     }
   ];
 
-  const recentActivity = [
-    { id: 1, action: 'Added new teacher', details: 'Alemnesh Kassahun', time: '2 hours ago' },
-    { id: 2, action: 'Updated schedule', details: 'Grade 10B Math period', time: '5 hours ago' },
-    { id: 3, action: 'Resolved conflict', details: 'Teacher double-booking on Monday', time: '1 day ago' },
-    { id: 4, action: 'Set period times', details: 'Added break period', time: '2 days ago' }
-  ];
-
   return (
-    <div ref={contentRef}>
-      <WelcomeBanner />
-      <SchoolStats />
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
-        {/* Quick Actions */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
-            <h2 className="text-lg md:text-xl font-bold text-gray-700 mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-              {quickActions.map((action, index) => (
-                <Link 
-                  to={action.path}
-                  key={index}
-                  className={`p-3 md:p-4 rounded-lg border hover:shadow-md transition-shadow flex items-start ${action.color}`}
-                >
-                  <span className="text-2xl mr-3">{action.icon}</span>
-                  <div>
-                    <h3 className="font-semibold">{action.title}</h3>
-                    <p className="text-xs md:text-sm mt-1">{action.description}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-        
-        {/* Recent Activity */}
-        <div>
-          <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
-              <h2 className="text-lg md:text-xl font-bold text-gray-700">Recent Activity</h2>
-              <button className="text-sm text-blue-600 hover:text-blue-800">
-                View All
-              </button>
-            </div>
-            
-            <div className="space-y-3">
-              {recentActivity.map(activity => (
-                <div key={activity.id} className="flex pb-3 border-b border-gray-100 last:border-0 last:pb-0">
-                  <div className="mr-3 mt-1">
-                    <div className="w-3 h-3 rounded-full bg-blue-600"></div>
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-700">{activity.action}</p>
-                    <p className="text-sm text-gray-600">{activity.details}</p>
-                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+    <div ref={containerRef} className="space-y-6">
+      {/* Welcome Section */}
+      <div className="welcome-section bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-2xl shadow-xl overflow-hidden">
+        <div className="p-6 md:p-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-white">Welcome back, Admin!</h1>
+          <p className="text-indigo-100 mt-2 max-w-2xl">
+            Here's what's happening with your school today. You have 3 pending requests and 2 schedule conflicts to resolve.
+          </p>
         </div>
       </div>
-      
-      {/* Timetable Preview */}
-      <div className="bg-white rounded-lg shadow-md p-4 md:p-6 mb-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
-          <h2 className="text-lg md:text-xl font-bold text-gray-700">Timetable Preview</h2>
-          <Link 
-            to="/admin-dashboard/timetable" 
-            className="text-sm text-blue-600 hover:text-blue-800"
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, index) => (
+          <div 
+            key={index}
+            className="stat-card bg-white rounded-2xl shadow-xl p-6 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]"
           >
-            View Full Timetable
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-gray-500 text-sm font-medium">{stat.label}</p>
+                <h3 className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</h3>
+              </div>
+              <div className="p-3 bg-indigo-100 rounded-xl">
+                {stat.icon}
+              </div>
+            </div>
+            <div className="mt-4 text-sm font-medium text-indigo-600">
+              {stat.change} from last month
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {quickActions.map((action, index) => (
+          <Link
+            key={index}
+            to={action.link}
+            className="quick-action"
+          >
+            <div className={`${action.color} rounded-2xl shadow-xl p-6 h-full flex flex-col transition-all duration-300 hover:shadow-2xl hover:translate-y-[-4px]`}>
+              <div className="flex items-center">
+                <div className="p-3 bg-white rounded-xl shadow-sm mr-4">
+                  {action.icon}
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">{action.title}</h3>
+              </div>
+              <p className="mt-3 text-gray-600 flex-1">
+                {action.title === 'Schedule Management' 
+                  ? 'View and manage class schedules, resolve conflicts' 
+                  : action.title === 'Create Reports' 
+                    ? 'Generate attendance and performance reports' 
+                    : 'Configure system settings and preferences'}
+              </p>
+              <div className="mt-4 text-indigo-600 font-medium flex items-center">
+                Go to section
+                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
           </Link>
-        </div>
-        
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse border border-gray-200">
-            <thead>
-              <tr>
-                <th className="border border-gray-300 p-2 bg-gray-100">Time/Day</th>
-                <th className="border border-gray-300 p-2 bg-gray-100">Monday</th>
-                <th className="border border-gray-300 p-2 bg-gray-100">Tuesday</th>
-                <th className="border border-gray-300 p-2 bg-gray-100">Wednesday</th>
-                <th className="border border-gray-300 p-2 bg-gray-100">Thursday</th>
-                <th className="border border-gray-300 p-2 bg-gray-100">Friday</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="border border-gray-300 p-2 bg-gray-50 font-medium">8:00 - 8:45</td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-blue-100 text-blue-800 text-xs md:text-sm p-1 rounded">Math - Grade 9A</div>
-                </td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-green-100 text-green-800 text-xs md:text-sm p-1 rounded">Science - Grade 10B</div>
-                </td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-purple-100 text-purple-800 text-xs md:text-sm p-1 rounded">English - Grade 9B</div>
-                </td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-yellow-100 text-yellow-800 text-xs md:text-sm p-1 rounded">History - Grade 10A</div>
-                </td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-red-100 text-red-800 text-xs md:text-sm p-1 rounded">Amharic - Grade 9A</div>
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 p-2 bg-gray-50 font-medium">8:50 - 9:35</td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-green-100 text-green-800 text-xs md:text-sm p-1 rounded">Science - Grade 9B</div>
-                </td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-blue-100 text-blue-800 text-xs md:text-sm p-1 rounded">Math - Grade 10A</div>
-                </td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-yellow-100 text-yellow-800 text-xs md:text-sm p-1 rounded">History - Grade 9A</div>
-                </td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-purple-100 text-purple-800 text-xs md:text-sm p-1 rounded">English - Grade 10B</div>
-                </td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-red-100 text-red-800 text-xs md:text-sm p-1 rounded">Amharic - Grade 10A</div>
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 p-2 bg-gray-50 font-medium">Break</td>
-                <td colSpan="5" className="border border-gray-300 p-2 bg-gray-50 text-center text-gray-500">
-                  11:15 - 11:45
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 p-2 bg-gray-50 font-medium">11:45 - 12:30</td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-purple-100 text-purple-800 text-xs md:text-sm p-1 rounded">English - Grade 10A</div>
-                </td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-red-100 text-red-800 text-xs md:text-sm p-1 rounded">Amharic - Grade 9B</div>
-                </td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-blue-100 text-blue-800 text-xs md:text-sm p-1 rounded">Math - Grade 10B</div>
-                </td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-green-100 text-green-800 text-xs md:text-sm p-1 rounded">Science - Grade 9A</div>
-                </td>
-                <td className="border border-gray-300 p-2">
-                  <div className="bg-yellow-100 text-yellow-800 text-xs md:text-sm p-1 rounded">History - Grade 10B</div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        ))}
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-white rounded-2xl shadow-xl p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h2>
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="flex items-start pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+              <div className="flex-shrink-0 mt-1">
+                <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                  <FaUsers />
+                </div>
+              </div>
+              <div className="ml-4">
+                <p className="font-medium text-gray-900">New student enrolled in Grade 5</p>
+                <p className="text-sm text-gray-500 mt-1">Sarah Johnson joined Section B</p>
+                <div className="mt-2 text-xs text-gray-400">10 minutes ago</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

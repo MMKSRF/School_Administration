@@ -1,229 +1,212 @@
-// src/AdminDashboard/ManageTeachers/TeacherRequests.jsx
-import { useState, useEffect, useRef } from 'react';
+// src/Components/Pages/Dashboard/AdminDashboard/ManageTeachers/TeacherRequests.jsx
+import React, { useEffect, useRef , useState } from 'react';
 import { gsap } from 'gsap';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchTeacherRequests, respondToRequest } from '../../../../../Redux/Slices/teachersSlice';
+import { FaClock, FaCheck, FaTimes, FaSearch, FaFilter } from 'react-icons/fa';
+import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 const TeacherRequests = () => {
-  const [requests, setRequests] = useState([
-    {
-      id: 1,
-      name: "Alemu Bekele",
-      phone: "0911123456",
-      email: "alemu@example.com",
-      teacherId: "T001",
-      subjects: ["Math", "Science"],
-      employmentType: "full-time",
-      status: "pending"
-    },
-    {
-      id: 2,
-      name: "Tigist Worku",
-      phone: "0922345678",
-      email: "",
-      teacherId: "T002",
-      subjects: ["English", "Amharic"],
-      employmentType: "part-time",
-      partTimePeriod: { start: "08:00", end: "12:00" },
-      status: "pending"
-    },
-    {
-      id: 3,
-      name: "Dawit Mekonnen",
-      phone: "0933456789",
-      email: "dawit@example.com",
-      teacherId: "T003",
-      subjects: ["History", "Geography"],
-      employmentType: "part-time",
-      partTimePeriod: { start: "13:00", end: "17:00" },
-      status: "pending"
-    }
-  ]);
-  
-  const containerRef = useRef(null);
+  const dispatch = useDispatch();
+  const { requests, status, error } = useSelector(state => state.teachers);
+  const containerRef = useRef();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    status: 'pending',
+    type: 'all'
+  });
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
-    if (containerRef.current) {
-      gsap.from(containerRef.current.children, {
-        duration: 0.5,
-        opacity: 100,
-        y: 0,
-        stagger: 0.1,
-        ease: "power2.out"
-      });
-    }
-  }, []);
+    dispatch(fetchTeacherRequests());
+  }, [dispatch]);
 
-  const handleApprove = (id) => {
-    const requestElement = document.getElementById(`request-${id}`);
-    gsap.to(requestElement, {
-      backgroundColor: "#DCFCE7",
-      borderColor: "#16A34A",
-      duration: 0.3,
-      onComplete: () => {
-        gsap.to(requestElement, {
-          opacity:   0,
-          height: 0,
-          padding: 0,
-          margin: 0,
-          duration: 0.4,
-          onComplete: () => {
-            setRequests(prev => prev.filter(req => req.id !== id));
-          }
-        });
-      }
-    });
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from('.request-item', {
+        y: 20,
+        opacity: 100,
+        stagger: 0.1,
+        duration: 0.4,
+        ease: 'power2.out'
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, [requests]);
+
+  const filteredRequests = requests.filter(request => {
+    const matchesSearch = request.teacherName?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                        request.type.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filters.status === 'all' || request.status === filters.status;
+    const matchesType = filters.type === 'all' || request.type === filters.type;
+
+    return matchesSearch && matchesStatus && matchesType;
+  });
+
+  const handleRespond = (id, response) => {
+    dispatch(respondToRequest({ id, response }));
   };
 
-  const handleReject = (id) => {
-    const requestElement = document.getElementById(`request-${id}`);
-    gsap.to(requestElement, {
-      backgroundColor: "#FEE2E2",
-      borderColor: "#DC2626",
-      duration: 0.3,
-      onComplete: () => {
-        gsap.to(requestElement, {
-          opacity: 0,
-          height: 0,
-          padding: 0,
-          margin: 0,
-          duration: 0.4,
-          onComplete: () => {
-            setRequests(prev => prev.filter(req => req.id !== id));
-          }
-        });
-      }
-    });
+  const getStatusBadge = (status) => {
+    switch(status) {
+      case 'pending':
+        return <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 flex items-center">
+          <FaClock className="mr-1" /> Pending
+        </span>;
+      case 'approved':
+        return <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 flex items-center">
+          <FaCheck className="mr-1" /> Approved
+        </span>;
+      case 'rejected':
+        return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 flex items-center">
+          <FaTimes className="mr-1" /> Rejected
+        </span>;
+      default:
+        return <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">{status}</span>;
+    }
+  };
+
+  const getRequestType = (type) => {
+    return type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   };
 
   return (
-    <div className="p-4 md:p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl md:text-2xl font-bold" style={{ color: '#374151' }}>
-          Teacher Registration Requests
-        </h1>
-        <div className="text-sm px-3 py-1 rounded-full" style={{ backgroundColor: '#EFF6FF', color: '#2563EB' }}>
-          {requests.length} pending requests
+    <div ref={containerRef} className="bg-white rounded-2xl shadow-xl p-6">
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Teacher Requests</h2>
+
+      {/* Search and Filter Bar */}
+      <div className="mb-6">
+        <div className="flex flex-col md:flex-row gap-3">
+          <div className="relative flex-1">
+            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search requests by teacher or type..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+          <button 
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50"
+          >
+            <FaFilter className="mr-2 text-gray-600" />
+            Filters
+            {showFilters ? (
+              <FiChevronUp className="ml-2" />
+            ) : (
+              <FiChevronDown className="ml-2" />
+            )}
+          </button>
         </div>
+
+        {/* Expanded Filters */}
+        {showFilters && (
+          <div className="mt-4 p-4 bg-gray-50 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <select
+                value={filters.status}
+                onChange={(e) => setFilters({...filters, status: e.target.value})}
+                className="w-full border border-gray-300 rounded-xl p-2"
+              >
+                <option value="all">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Request Type</label>
+              <select
+                value={filters.type}
+                onChange={(e) => setFilters({...filters, type: e.target.value})}
+                className="w-full border border-gray-300 rounded-xl p-2"
+              >
+                <option value="all">All Types</option>
+                <option value="leave">Leave Request</option>
+                <option value="schedule_change">Schedule Change</option>
+                <option value="resource">Resource Request</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        )}
       </div>
 
-      <div ref={containerRef} className="space-y-4">
-        {requests.length === 0 ? (
-          <div className="text-center py-12">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="#4B5563">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <h3 className="text-lg font-medium" style={{ color: '#374151' }}>No pending requests</h3>
-            <p className="mt-1" style={{ color: '#4B5563' }}>All teacher registration requests have been processed</p>
-          </div>
-        ) : (
-          requests.map((request) => (
+      {/* Requests List */}
+      {status === 'loading' ? (
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-24 bg-gray-100 rounded-xl animate-pulse"></div>
+          ))}
+        </div>
+      ) : error ? (
+        <div className="text-red-500 p-4 bg-red-50 rounded-xl">{error}</div>
+      ) : filteredRequests.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="text-gray-400 mb-4">No requests found</div>
+          <p className="text-gray-500">Try adjusting your search or filters</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {filteredRequests.map(request => (
             <div 
               key={request.id}
-              id={`request-${request.id}`}
-              className="bg-white rounded-lg border shadow-sm p-4 md:p-6 transition-all"
+              className="request-item p-5 border border-gray-200 rounded-xl hover:shadow-md transition-shadow duration-200"
             >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-                <div>
-                  <h3 className="font-bold text-lg" style={{ color: '#2563EB' }}>{request.name}</h3>
-                  <div className="mt-2 space-y-1">
-                    <div className="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="#4B5563">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
-                      <span style={{ color: '#4B5563' }}>{request.phone}</span>
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div className="mb-4 md:mb-0">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-medium">
+                      {request.teacherName?.charAt(0)}
                     </div>
-                    {request.email && (
-                      <div className="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="#4B5563">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <span style={{ color: '#4B5563' }}>{request.email}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="#4B5563">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
-                      </svg>
-                      <span style={{ color: '#4B5563' }}>ID: {request.teacherId}</span>
+                    <div className="ml-4">
+                      <h3 className="text-lg font-medium text-gray-900">{request.teacherName}</h3>
+                      <p className="text-sm text-gray-500">{getRequestType(request.type)}</p>
                     </div>
                   </div>
                 </div>
-                
-                <div>
-                  <h4 className="font-semibold mb-2" style={{ color: '#374151' }}>Subjects Taught</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {request.subjects.map((subject, index) => (
-                      <span 
-                        key={index} 
-                        className="px-3 py-1 rounded-full text-sm"
-                        style={{ backgroundColor: '#EFF6FF', color: '#2563EB' }}
+                <div className="flex items-center space-x-4">
+                  <div>
+                    {getStatusBadge(request.status)}
+                  </div>
+                  {request.status === 'pending' && (
+                    <div className="flex space-x-2">
+                      <button 
+                        onClick={() => handleRespond(request.id, 'approved')}
+                        className="px-3 py-1 bg-green-100 text-green-800 rounded-lg hover:bg-green-200 flex items-center"
                       >
-                        {subject}
-                      </span>
-                    ))}
-                  </div>
-                  
-                  <h4 className="font-semibold mt-4 mb-2" style={{ color: '#374151' }}>Employment Type</h4>
-                  <div className="flex items-center">
-                    <span 
-                      className="px-3 py-1 rounded-full text-sm"
-                      style={{ 
-                        backgroundColor: request.employmentType === 'full-time' 
-                          ? '#DCFCE7' 
-                          : '#FEF3C7',
-                        color: request.employmentType === 'full-time' 
-                          ? '#16A34A' 
-                          : '#CA8A04'
-                      }}
-                    >
-                      {request.employmentType === 'full-time' ? 'Full-time' : 'Part-time'}
-                    </span>
-                  </div>
-                  
-                  {request.employmentType === 'part-time' && (
-                    <div className="mt-2">
-                      <h4 className="font-semibold mb-1" style={{ color: '#374151' }}>Availability</h4>
-                      <p style={{ color: '#4B5563' }}>
-                        {request.partTimePeriod.start} - {request.partTimePeriod.end}
-                      </p>
+                        <FaCheck className="mr-1" /> Approve
+                      </button>
+                      <button 
+                        onClick={() => handleRespond(request.id, 'rejected')}
+                        className="px-3 py-1 bg-red-100 text-red-800 rounded-lg hover:bg-red-200 flex items-center"
+                      >
+                        <FaTimes className="mr-1" /> Reject
+                      </button>
                     </div>
                   )}
                 </div>
-                
-                <div className="flex flex-col justify-between">
-                  <div className="flex flex-col items-end">
-                    <span className="text-sm px-3 py-1 rounded-full" style={{ backgroundColor: '#FEF3C7', color: '#CA8A04' }}>
-                      New Request
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-end gap-3 mt-4">
-                    <button
-                      onClick={() => handleReject(request.id)}
-                      className="px-4 py-2 rounded-md text-sm md:text-base flex items-center"
-                      style={{ backgroundColor: '#FEE2E2', color: '#B91C1C' }}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                      Reject
+              </div>
+              
+              <div className="mt-4">
+                <p className="text-sm text-gray-700">{request.details}</p>
+                <div className="mt-3 flex items-center text-xs text-gray-500">
+                  <span>Submitted on {new Date(request.createdAt).toLocaleDateString()}</span>
+                  {request.attachments && (
+                    <button className="ml-4 text-indigo-600 hover:text-indigo-800">
+                      View Attachments
                     </button>
-                    <button
-                      onClick={() => handleApprove(request.id)}
-                      className="px-4 py-2 rounded-md text-sm md:text-base flex items-center"
-                      style={{ backgroundColor: '#DCFCE7', color: '#166534' }}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Approve
-                    </button>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

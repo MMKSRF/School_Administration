@@ -1,41 +1,109 @@
-// src/AdminDashboard/DashboardWidgets/SchoolStats.jsx
-import React from 'react';
+// src/Components/Pages/Dashboard/AdminDashboard/DashboardWidgets/SchoolStats.jsx
+import React, { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { FaUsers, FaChalkboardTeacher, FaSchool, FaChartLine } from 'react-icons/fa';
 
-const SchoolStats = () => {
-  const stats = [
-    { name: 'Total Teachers', value: 24, change: '+4%', changeType: 'positive' },
-    { name: 'Active Classes', value: 18, change: '+2', changeType: 'positive' },
-    { name: 'Periods Configured', value: 8, change: '0%', changeType: 'neutral' },
-    { name: 'Schedule Conflicts', value: 3, change: '-1', changeType: 'negative' },
+const SchoolStats = ({ stats }) => {
+  const containerRef = useRef();
+  const statRefs = useRef([]);
+  
+  // Animation on component mount
+useEffect(() => {
+  const ctx = gsap.context(() => {
+    gsap.from(statRefs.current, {
+      y: 24,
+      opacity: 100, // should be 0 for animation to fade in
+      stagger: 0,
+      duration: 0.6,
+      ease: 'power2.out'
+    });
+
+    // Counter animations using statCards
+    statCards.forEach((stat, i) => {
+      const ref = statRefs.current[i];
+      if (!ref) return; // avoid null refs
+
+      gsap.fromTo(ref.querySelector('.stat-value'), 
+        { textContent: 0 },
+        {
+          textContent: stat.value,
+          duration: 1.5,
+          ease: 'power1.out',
+          snap: { textContent: 1 },
+          stagger: 1
+        }
+      );
+    });
+  }, containerRef);
+
+  return () => ctx.revert();
+}, [stats]);
+
+  const statCards = [
+    { 
+      title: 'Total Students', 
+      icon: <FaUsers className="text-indigo-500" size={24} />,
+      value: stats?.students || 0,
+      change: stats?.studentChange || 0
+    },
+    { 
+      title: 'Teaching Staff', 
+      icon: <FaChalkboardTeacher className="text-indigo-500" size={24} />,
+      value: stats?.teachers || 0,
+      change: stats?.teacherChange || 0
+    },
+    { 
+      title: 'Active Classes', 
+      icon: <FaSchool className="text-indigo-500" size={24} />,
+      value: stats?.classes || 0,
+      change: stats?.classChange || 0
+    },
+    { 
+      title: 'Attendance Rate', 
+      icon: <FaChartLine className="text-indigo-500" size={24} />,
+      value: stats?.attendance || 0,
+      change: stats?.attendanceChange || 0,
+      isPercentage: true
+    }
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
-      {stats.map((stat) => (
+    <div 
+      ref={containerRef}
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+    >
+      {statCards.map((stat, index) => (
         <div 
-          key={stat.name} 
-          className="bg-white rounded-lg shadow p-4 md:p-6 border-l-4 border-blue-600"
+          key={index}
+          ref={el => statRefs.current[index] = el}
+          className="bg-white rounded-2xl shadow-xl p-6 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]"
         >
-          <div className="flex justify-between">
-            <h3 className="text-sm md:text-base font-medium text-gray-700">{stat.name}</h3>
-            <span className={`px-2 py-1 text-xs rounded-full ${
-              stat.changeType === 'positive' ? 'bg-green-100 text-green-800' :
-              stat.changeType === 'negative' ? 'bg-red-100 text-red-800' :
-              'bg-blue-100 text-blue-800'
-            }`}>
-              {stat.change}
-            </span>
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-gray-500 text-sm font-medium">{stat.title}</p>
+              <h3 className="text-3xl font-bold text-gray-900 mt-2 stat-value">
+                {stat.value}
+                {stat.isPercentage && '%'}
+              </h3>
+            </div>
+            <div className="p-3 bg-indigo-100 rounded-xl">
+              {stat.icon}
+            </div>
           </div>
-          <p className="mt-2 text-2xl md:text-3xl font-bold text-gray-900">{stat.value}</p>
-          <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              className={`h-full ${
-                stat.changeType === 'positive' ? 'bg-green-600' :
-                stat.changeType === 'negative' ? 'bg-red-600' :
-                'bg-blue-600'
-              }`} 
-              style={{ width: '75%' }}
-            ></div>
+          
+          <div className={`mt-4 flex items-center text-sm font-medium ${
+            stat.change >= 0 ? 'text-green-600' : 'text-red-600'
+          }`}>
+            {stat.change >= 0 ? (
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7"></path>
+              </svg>
+            ) : (
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            )}
+            {Math.abs(stat.change)}% {stat.change >= 0 ? 'increase' : 'decrease'} from last month
           </div>
         </div>
       ))}

@@ -1,34 +1,126 @@
-// src/AdminDashboard/Topbar.jsx
-import React from 'react';
+// src/Components/Pages/Dashboard/AdminDashboard/Topbar.jsx
+import React, { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import { FaSearch, FaBell, FaEnvelope, FaUserCircle, FaCog } from 'react-icons/fa';
+import { FiMenu } from 'react-icons/fi';
 
-const Topbar = ({ toggleSidebar }) => {
+const Topbar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const containerRef = useRef();
+  
+  useEffect(() => {
+    // Mock notifications
+    setNotifications([
+      { id: 1, text: 'New student enrollment request', time: '10 min ago', read: false },
+      { id: 2, text: 'Schedule conflict detected', time: '45 min ago', read: true },
+      { id: 3, text: 'Teacher leave request pending', time: '2 hours ago', read: false }
+    ]);
+  }, []);
+  
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      if (isMenuOpen) {
+        gsap.from('.dropdown-menu', {
+          y: -10,
+          opacity: 100,
+          duration: 0.3,
+          ease: 'power2.out'
+        });
+      }
+    }, containerRef);
+    
+    return () => ctx.revert();
+  }, [isMenuOpen]);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
   return (
-    <header className="bg-white shadow-sm z-10">
-      <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
+    <div 
+      ref={containerRef}
+      className="bg-white border-b border-gray-200 shadow-sm"
+    >
+      <div className="px-6 py-4 flex items-center justify-between">
+        {/* Left Side - Menu Button and Search */}
         <div className="flex items-center">
-          <button 
-            onClick={toggleSidebar}
-            className="text-gray-600 mr-3 md:mr-4 focus:outline-none lg:hidden"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+          <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 mr-4">
+            <FiMenu className="text-xl" />
           </button>
-          <h1 className="text-lg md:text-xl font-semibold text-gray-700">Ethiopian High School</h1>
+          
+          <div className="relative hidden md:block">
+            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search..."
+              className="pl-10 pr-4 py-2 w-64 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
         </div>
         
-        <div className="flex items-center space-x-3 md:space-x-4">
-          <button className="text-gray-600 hover:text-gray-800 focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
+        {/* Right Side - Icons and Profile */}
+        <div className="flex items-center space-x-4">
+          <button className="relative p-2 rounded-full hover:bg-gray-100 text-gray-600">
+            <FaEnvelope className="text-lg" />
+            <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              3
+            </span>
           </button>
+          
+          <button className="relative p-2 rounded-full hover:bg-gray-100 text-gray-600">
+            <FaBell className="text-lg" />
+            {unreadCount > 0 && (
+              <span className="absolute top-0 right-0 bg-indigo-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+          
           <div className="relative">
-            <div className="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 md:w-10 md:h-10 cursor-pointer" />
+            <button 
+              onClick={toggleMenu}
+              className="flex items-center space-x-2 focus:outline-none"
+            >
+              <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                <FaUserCircle className="text-xl" />
+              </div>
+              <span className="hidden md:block font-medium text-gray-700">Admin User</span>
+            </button>
+            
+            {isMenuOpen && (
+              <div className="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg z-10 border border-gray-200">
+                <div className="py-1">
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900">Admin User</p>
+                    <p className="text-xs text-gray-500">admin@school.edu</p>
+                  </div>
+                  
+                  <button className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                    <FaUserCircle className="mr-2 text-gray-500" />
+                    My Profile
+                  </button>
+                  
+                  <button className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                    <FaCog className="mr-2 text-gray-500" />
+                    Settings
+                  </button>
+                  
+                  <button className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-100 border-t border-gray-100 flex items-center">
+                    <FaSignOutAlt className="mr-2 text-gray-500" />
+                    Logout
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </header>
+      
+      {/* Notifications Dropdown (would be conditionally rendered) */}
+    </div>
   );
 };
 

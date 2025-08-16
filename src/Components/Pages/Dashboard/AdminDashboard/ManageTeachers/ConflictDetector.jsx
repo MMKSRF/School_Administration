@@ -1,247 +1,260 @@
-// src/AdminDashboard/ManageSchedule/ConflictDetector.jsx
-import React, { useState, useEffect, useRef } from 'react';
+// src/Components/Pages/Dashboard/AdminDashboard/ManageTeachers/ConflictDetector.jsx
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { useNavigate } from 'react-router-dom';
+// import { useSelector } from 'react-redux';
+import { FaExclamationTriangle, FaCheckCircle, FaInfoCircle } from 'react-icons/fa';
+import { FiRefreshCw } from 'react-icons/fi';
 
 const ConflictDetector = () => {
-  const navigate = useNavigate();
-  const contentRef = useRef();
-  const [conflicts, setConflicts] = useState([
-    {
-      id: 1,
-      type: 'Teacher Conflict',
-      severity: 'high',
-      description: 'Teacher Alemu Bekele is scheduled for two classes at the same time',
-      details: {
-        teacher: 'Alemu Bekele',
-        day: 'Monday',
-        period: 'Period 1',
-        conflictingClasses: ['Grade 9A Math', 'Grade 10B Physics']
-      },
-      resolved: false
-    },
-    {
-      id: 2,
-      type: 'Room Conflict',
-      severity: 'medium',
-      description: 'Room 101 is double-booked for the same period',
-      details: {
-        room: 'Room 101',
-        day: 'Tuesday',
-        period: 'Period 3',
-        conflictingClasses: ['Grade 9B English', 'Grade 10A History']
-      },
-      resolved: false
-    }
-  ]);
+  // const { schedules } = useSelector(state => state.teachers);
+  const containerRef = useRef();
+  const [conflicts, setConflicts] = useState([]);
+  const [isScanning, setIsScanning] = useState(false);
 
   useEffect(() => {
-    gsap.from(contentRef.current.children, {
-      y: 0,
-      opacity: 100,
-      stagger: 0.1,
-      duration: 0.8,
-      ease: 'power2.out',
-      delay: 0.3
-    });
-  }, []);
+    const ctx = gsap.context(() => {
+      gsap.from('.conflict-item', {
+        y: 20,
+        opacity: 100,
+        stagger: 0.1,
+        duration: 0.4,
+        ease: 'power2.out'
+      });
+    }, containerRef);
 
-  const resolveConflict = (id) => {
-    setConflicts(prev => prev.map(conflict => 
-      conflict.id === id ? { ...conflict, resolved: true } : conflict
-    ));
-  };
+    return () => ctx.revert();
+  }, [conflicts]);
 
-  const unresolveConflict = (id) => {
-    setConflicts(prev => prev.map(conflict => 
-      conflict.id === id ? { ...conflict, resolved: false } : conflict
-    ));
-  };
-
-  const deleteConflict = (id) => {
-    setConflicts(prev => prev.filter(conflict => conflict.id !== id));
-  };
-
-  const handleRunDetection = () => {
-    gsap.to('.refresh-icon', {
-      rotation: 360,
-      duration: 1,
-      ease: 'power2.out'
-    });
+  const detectConflicts = () => {
+    setIsScanning(true);
     
+    // Simulate scanning delay
     setTimeout(() => {
-      setConflicts(prev => [
-        ...prev,
+      // In a real app, this would be a proper conflict detection algorithm
+      const mockConflicts = [
         {
-          id: Date.now(),
-          type: 'Subject Overload',
-          severity: 'medium',
-          description: 'Grade 9A has 5 consecutive Math periods this week',
-          details: {
-            class: 'Grade 9A',
-            subject: 'Math',
-            occurrences: 5
-          },
-          resolved: false
+          id: '1',
+          type: 'teacher',
+          severity: 'critical',
+          title: 'Teacher Double Booking',
+          description: 'Mr. Smith is scheduled for two classes at the same time',
+          items: [
+            {
+              type: 'Class',
+              name: 'Physics 101',
+              time: 'Mon, Wed, Fri 10:00-11:30',
+              room: 'Room 203'
+            },
+            {
+              type: 'Class',
+              name: 'Chemistry Lab',
+              time: 'Mon, Wed, Fri 10:00-11:30',
+              room: 'Room 205'
+            }
+          ],
+          suggestedFix: 'Move Physics 101 to Tue, Thu 10:00-11:30 or assign another teacher'
+        },
+        {
+          id: '2',
+          type: 'room',
+          severity: 'critical',
+          title: 'Room Double Booking',
+          description: 'Room 203 is booked for two different classes',
+          items: [
+            {
+              type: 'Class',
+              name: 'Physics 101',
+              teacher: 'Mr. Smith',
+              time: 'Mon, Wed, Fri 10:00-11:30'
+            },
+            {
+              type: 'Class',
+              name: 'Math 201',
+              teacher: 'Ms. Johnson',
+              time: 'Mon, Wed, Fri 10:00-11:30'
+            }
+          ],
+          suggestedFix: 'Move Math 201 to Room 207 or change the time slot'
+        },
+        {
+          id: '3',
+          type: 'availability',
+          severity: 'warning',
+          title: 'Part-time Teacher Availability',
+          description: 'Ms. Davis is scheduled outside her available hours',
+          items: [
+            {
+              type: 'Availability',
+              name: 'Ms. Davis',
+              available: 'Mon-Thu 1:00-5:00 PM'
+            },
+            {
+              type: 'Class',
+              name: 'English 301',
+              time: 'Fri 9:00-10:30 AM',
+              room: 'Room 104'
+            }
+          ],
+          suggestedFix: 'Reschedule to Thu 1:00-2:30 PM or find another teacher'
         }
-      ]);
+      ];
+      
+      setConflicts(mockConflicts);
+      setIsScanning(false);
+      
+      // Animate new conflicts
+      gsap.from('.conflict-item', {
+        y: 20,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.4,
+        ease: 'power2.out'
+      });
     }, 1500);
+  };
+
+  const getSeverityIcon = (severity) => {
+    switch(severity) {
+      case 'critical':
+        return <FaExclamationTriangle className="text-red-500" />;
+      case 'warning':
+        return <FaExclamationTriangle className="text-yellow-500" />;
+      default:
+        return <FaInfoCircle className="text-blue-500" />;
+    }
   };
 
   const getSeverityColor = (severity) => {
     switch(severity) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'critical':
+        return 'bg-red-50 border-red-200';
+      case 'warning':
+        return 'bg-yellow-50 border-yellow-200';
+      default:
+        return 'bg-blue-50 border-blue-200';
     }
   };
 
-  const unresolvedConflicts = conflicts.filter(c => !c.resolved);
-  const resolvedConflicts = conflicts.filter(c => c.resolved);
+  const applyFix = (conflictId, fixIndex) => {
+    // In a real app, this would dispatch an action to update the schedule
+    console.log(`Applying fix ${fixIndex} to conflict ${conflictId}`);
+    setConflicts(prev => prev.filter(c => c.id !== conflictId));
+    
+    // Show success animation
+    gsap.to(`#conflict-${conflictId}`, {
+      backgroundColor: '#ECFDF5',
+      borderColor: '#A7F3D0',
+      duration: 0.5,
+      onComplete: () => {
+        gsap.to(`#conflict-${conflictId}`, {
+          height: 0,
+          opacity: 0,
+          paddingTop: 0,
+          paddingBottom: 0,
+          marginBottom: 0,
+          duration: 0.3,
+          onComplete: () => {
+            setConflicts(prev => prev.filter(c => c.id !== conflictId));
+          }
+        });
+      }
+    });
+  };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-3">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-700">Conflict Detector</h2>
-        
-        <button 
-          onClick={handleRunDetection}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center"
+    <div ref={containerRef} className="bg-white rounded-2xl shadow-xl p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+          <FaExclamationTriangle className="text-yellow-500 mr-3" />
+          Schedule Conflict Detection
+        </h2>
+        <button
+          onClick={detectConflicts}
+          disabled={isScanning}
+          className={`px-4 py-2 rounded-xl flex items-center ${
+            isScanning 
+              ? 'bg-gray-200 text-gray-600 cursor-not-allowed' 
+              : 'bg-indigo-600 text-white hover:bg-indigo-700'
+          }`}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" 
-               className="h-5 w-5 mr-1 refresh-icon" 
-               viewBox="0 0 20 20" 
-               fill="currentColor">
-            <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
-          </svg>
-          Detect Conflicts
+          <FiRefreshCw className={`mr-2 ${isScanning ? 'animate-spin' : ''}`} />
+          {isScanning ? 'Scanning...' : 'Scan for Conflicts'}
         </button>
       </div>
-      
-      <div ref={contentRef}>
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
-            <h3 className="text-lg font-semibold text-gray-700 flex items-center">
-              Unresolved Conflicts
-              {unresolvedConflicts.length > 0 && (
-                <span className="ml-2 bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm">
-                  {unresolvedConflicts.length}
-                </span>
-              )}
-            </h3>
-            <button 
-              onClick={() => navigate('/admin-dashboard/schedule/create')}
-              className="text-sm text-blue-600 hover:text-blue-800"
-            >
-              Go to Schedule Editor
-            </button>
-          </div>
-          
-          {unresolvedConflicts.length > 0 ? (
-            <div className="space-y-4">
-              {unresolvedConflicts.map(conflict => (
-                <div key={conflict.id} className="border border-red-200 rounded-lg p-4 bg-red-50">
-                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center flex-wrap gap-2 mb-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getSeverityColor(conflict.severity)}`}>
-                          {conflict.severity.toUpperCase()}
-                        </span>
-                        <span className="font-medium text-red-800">{conflict.type}</span>
-                      </div>
-                      <p className="text-gray-700">{conflict.description}</p>
-                      
-                      <div className="mt-3 bg-white p-3 rounded-md text-sm">
-                        {Object.entries(conflict.details).map(([key, value]) => (
-                          <div key={key} className="flex mb-1">
-                            <span className="font-medium text-gray-700 w-32 capitalize">{key}:</span>
-                            <span className="text-gray-900">
-                              {Array.isArray(value) ? value.join(', ') : value}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-col gap-2">
-                      <button
-                        onClick={() => resolveConflict(conflict.id)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
-                      >
-                        Mark Resolved
-                      </button>
-                      <button
-                        onClick={() => deleteConflict(conflict.id)}
-                        className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm"
-                      >
-                        Dismiss
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 bg-green-50 rounded-lg border border-green-200">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <h4 className="mt-3 text-lg font-medium text-green-800">No Conflicts Found</h4>
-              <p className="text-gray-600 mt-1">Your schedule is currently conflict-free!</p>
-            </div>
-          )}
+
+      {conflicts.length === 0 && !isScanning ? (
+        <div className="text-center py-12">
+          <div className="text-gray-400 mb-4">No conflicts detected</div>
+          <p className="text-gray-500">Click "Scan for Conflicts" to check for scheduling issues</p>
         </div>
-        
-        {resolvedConflicts.length > 0 && (
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-700 flex items-center">
-                Resolved Conflicts
-                <span className="ml-2 bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">
-                  {resolvedConflicts.length}
-                </span>
-              </h3>
-            </div>
-            
-            <div className="space-y-3">
-              {resolvedConflicts.map(conflict => (
-                <div key={conflict.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center flex-wrap gap-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getSeverityColor(conflict.severity)}`}>
-                          {conflict.severity.toUpperCase()}
-                        </span>
-                        <span className="font-medium text-gray-800">{conflict.type}</span>
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
-                          RESOLVED
-                        </span>
-                      </div>
-                      <p className="mt-2 text-gray-600">{conflict.description}</p>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => unresolveConflict(conflict.id)}
-                        className="text-sm text-blue-600 hover:text-blue-800"
-                      >
-                        Re-open
-                      </button>
-                      <button
-                        onClick={() => deleteConflict(conflict.id)}
-                        className="text-sm text-red-600 hover:text-red-800"
-                      >
-                        Delete
-                      </button>
+      ) : isScanning ? (
+        <div className="text-center py-12">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600 mb-4"></div>
+          <p className="text-gray-600">Analyzing schedules for potential conflicts...</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {conflicts.map(conflict => (
+            <div 
+              key={conflict.id}
+              id={`conflict-${conflict.id}`}
+              className={`conflict-item p-5 border-l-4 rounded-r-xl ${getSeverityColor(conflict.severity)}`}
+              style={{ borderLeftWidth: '4px' }}
+            >
+              <div className="flex items-start">
+                <div className="flex-shrink-0 mt-1 mr-4">
+                  {getSeverityIcon(conflict.severity)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-medium text-gray-900 mb-1">{conflict.title}</h3>
+                  <p className="text-gray-600 mb-3">{conflict.description}</p>
+                  
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Conflicting Items:</h4>
+                    <div className="space-y-2">
+                      {conflict.items.map((item, i) => (
+                        <div key={i} className="pl-4 border-l-2 border-gray-200">
+                          <div className="text-sm font-medium text-gray-800">{item.type}: {item.name}</div>
+                          <div className="text-xs text-gray-500">
+                            {Object.entries(item)
+                              .filter(([key]) => key !== 'type' && key !== 'name')
+                              .map(([key, value]) => (
+                                <span key={key} className="mr-3">{key}: {value}</span>
+                              ))}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
+                  
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Suggested Fix:</h4>
+                    <p className="text-sm text-gray-600 bg-white p-3 rounded-lg border border-gray-200">
+                      {conflict.suggestedFix}
+                    </p>
+                  </div>
+                  
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => applyFix(conflict.id, 1)}
+                      className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 flex items-center"
+                    >
+                      <FaCheckCircle className="mr-2" />
+                      Apply This Fix
+                    </button>
+                    <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                      Ignore Conflict
+                    </button>
+                    <button className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200">
+                      View Details
+                    </button>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

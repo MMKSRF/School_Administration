@@ -1,309 +1,433 @@
-// src/AdminDashboard/ManageSchedule/CreateSchedule.jsx
-import React, { useState, useEffect } from 'react';
+// src/Components/Pages/Dashboard/AdminDashboard/ManageTeachers/CreateSchedule.jsx
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-// import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchTeachers, fetchClasses, createSchedule } from '../../../../../Redux/Slices/teachersSlice';
+import { FaCalendarAlt, FaSearch, FaTimes, FaCheck, FaExclamationTriangle } from 'react-icons/fa';
+import { FiChevronDown } from 'react-icons/fi';
 
 const CreateSchedule = () => {
-  // const navigate = useNavigate();
-  // const [selectedClass, setSelectedClass] = useState('Grade 9A');
+  const dispatch = useDispatch();
+  // const { teachers, classes, status, error } = useSelector(state => state.teachers);
+  const { teachers, classes } = useSelector(state => state.teachers);
+  const containerRef = useRef();
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    teacherId: '',
+    classId: '',
+    periodId: '',
+    room: '',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: '',
+    recurrence: 'weekly',
+    daysOfWeek: []
+  });
   const [conflicts, setConflicts] = useState([]);
-  const [selectedCell, setSelectedCell] = useState(null);
-  const [showConflictPanel, setShowConflictPanel] = useState(false);
-  
-  // Mock data
-  const classes = ['Grade 9A', 'Grade 9B', 'Grade 10A', 'Grade 10B'];
-  const subjects = ['Math', 'English', 'Science', 'History', 'Amharic'];
-  const teachers = [
-    { id: 1, name: 'Alemu Bekele', subjects: ['Math', 'Science'] },
-    { id: 2, name: 'Tigist Worku', subjects: ['English', 'Amharic'] },
-    { id: 3, name: 'Dawit Mekonnen', subjects: ['History', 'Geography'] },
-  ];
-  
-  // Updated to 7 periods
-  const periods = [
-    { id: 1, name: 'Period 1', start: '08:00', end: '08:45' },
-    { id: 2, name: 'Period 2', start: '08:50', end: '09:35' },
-    { id: 3, name: 'Period 3', start: '09:40', end: '10:25' },
-    { id: 4, name: 'Period 4', start: '10:30', end: '11:15' },
-    { id: 5, name: 'Period 5', start: '11:20', end: '12:05' },
-    { id: 6, name: 'Period 6', start: '12:10', end: '12:55' },
-    { id: 7, name: 'Period 7', start: '13:00', end: '13:45' },
-  ];
-  
-  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-  
-  const [schedule, setSchedule] = useState(() => 
-    classes.map(cls => ({
-      class: cls,
-      days: days.map(day => ({
-        day,
-        periods: periods.map(period => ({
-          period: period.name,
-          subject: '',
-          teacher: ''
-        }))
-      }))
-    })
-  ));
-  
+  const [showTeacherDropdown, setShowTeacherDropdown] = useState(false);
+  const [showClassDropdown, setShowClassDropdown] = useState(false);
+
   useEffect(() => {
-    if (conflicts.length > 0) {
-      gsap.to('.conflict-cell', {
-        backgroundColor: 'rgba(220, 38, 38, 0.1)',
-        border: '2px solid #DC2626',
+    dispatch(fetchTeachers());
+    dispatch(fetchClasses());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from('.schedule-step', {
+        x: 50,
+        opacity: 100,
         duration: 0.5,
-        yoyo: true,
-        repeat: 1
+        ease: 'power2.out'
       });
-      
-      setShowConflictPanel(true);
-    }
-  }, [conflicts]);
-  
-  const handleCellChange = (classIndex, dayIndex, periodIndex, field, value) => {
-    setSchedule(prev => {
-      const newSchedule = [...prev];
-      newSchedule[classIndex].days[dayIndex].periods[periodIndex][field] = value;
-      return newSchedule;
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, [step]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const toggleDaySelection = (day) => {
+    setFormData(prev => {
+      const newDays = prev.daysOfWeek.includes(day)
+        ? prev.daysOfWeek.filter(d => d !== day)
+        : [...prev.daysOfWeek, day];
+      return { ...prev, daysOfWeek: newDays };
     });
   };
-  
-  const detectConflicts = () => {
-    const newConflicts = [];
-    const teacherAssignments = {};
-    
-    schedule.forEach((cls, /*classIndex*/) => {
-      cls.days.forEach((day, /*dayIndex*/) => {
-        day.periods.forEach((period, periodIndex) => {
-          if (period.teacher) {
-            const key = `${period.teacher}-${day.day}-${period.period}`;
+
+  const checkConflicts = () => {
+    // In a real app, this would call an API to check for conflicts
+    const mockConflicts = [
+      {
+        type: 'teacher',
+        message: 'Teacher already has a class scheduled during this time',
+        existing: {
+          class: 'Physics 101',
+          room: 'Room 203',
+          time: '10:00 AM - 11:30 AM'
+        }
+      },
+      {
+        type: 'room',
+        message: 'Room is already booked for another class',
+        existing: {
+          class: 'Chemistry Lab',
+          teacher: 'Dr. Smith',
+          time: '10:00 AM - 11:30 AM'
+        }
+      }
+    ];
+    setConflicts(mockConflicts);
+    setStep(3);
+  };
+
+  const handleSubmit = () => {
+    dispatch(createSchedule(formData));
+    // Reset form or redirect
+  };
+
+  const renderStep = () => {
+    switch(step) {
+      case 1:
+        return (
+          <div className="schedule-step space-y-6">
+            <h3 className="text-xl font-bold text-gray-900">Select Teacher and Class</h3>
             
-            if (teacherAssignments[key]) {
-              newConflicts.push({
-                teacher: period.teacher,
-                day: day.day,
-                period: period.period,
-                classes: [
-                  ...teacherAssignments[key],
-                  { class: cls.class, periodIndex }
-                ]
-              });
-            } else {
-              teacherAssignments[key] = [{ class: cls.class, periodIndex }];
-            }
-          }
-        });
-      });
-    });
-    
-    setConflicts(newConflicts);
-    return newConflicts;
-  };
-  
-  const resolveConflict = (conflictIndex) => {
-    setConflicts(prev => prev.filter((_, i) => i !== conflictIndex));
-  };
-  
-  const getTeachersForSubject = (subject) => {
-    return teachers.filter(teacher => 
-      teacher.subjects.includes(subject)
-    ).map(t => t.name);
-  };
-  
-  const generateSchedule = () => {
-    const detectedConflicts = detectConflicts();
-    if (detectedConflicts.length === 0) {
-      alert('Schedule generated successfully with no conflicts!');
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Teacher*</label>
+              <button
+                type="button"
+                onClick={() => setShowTeacherDropdown(!showTeacherDropdown)}
+                className="w-full flex justify-between items-center p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <span>
+                  {formData.teacherId 
+                    ? teachers.find(t => t.id === formData.teacherId)?.name 
+                    : 'Select a teacher'}
+                </span>
+                <FiChevronDown className={`transition-transform ${showTeacherDropdown ? 'transform rotate-180' : ''}`} />
+              </button>
+              {showTeacherDropdown && (
+                <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-xl border border-gray-300 max-h-60 overflow-auto">
+                  {teachers.map(teacher => (
+                    <div 
+                      key={teacher.id}
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, teacherId: teacher.id }));
+                        setShowTeacherDropdown(false);
+                      }}
+                      className="p-3 hover:bg-gray-50 cursor-pointer flex items-center"
+                    >
+                      <div className="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-medium mr-3">
+                        {teacher.name.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="font-medium">{teacher.name}</div>
+                        <div className="text-xs text-gray-500">{teacher.subjects.join(', ')}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Class*</label>
+              <button
+                type="button"
+                onClick={() => setShowClassDropdown(!showClassDropdown)}
+                className="w-full flex justify-between items-center p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <span>
+                  {formData.classId 
+                    ? classes.find(c => c.id === formData.classId)?.name 
+                    : 'Select a class'}
+                </span>
+                <FiChevronDown className={`transition-transform ${showClassDropdown ? 'transform rotate-180' : ''}`} />
+              </button>
+              {showClassDropdown && (
+                <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-xl border border-gray-300 max-h-60 overflow-auto">
+                  {classes.map(cls => (
+                    <div 
+                      key={cls.id}
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, classId: cls.id }));
+                        setShowClassDropdown(false);
+                      }}
+                      className="p-3 hover:bg-gray-50 cursor-pointer"
+                    >
+                      <div className="font-medium">{cls.name}</div>
+                      <div className="text-xs text-gray-500">
+                        {cls.grade} • {cls.subject} • {cls.students?.length || 0} students
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Room*</label>
+              <input
+                type="text"
+                name="room"
+                value={formData.room}
+                onChange={handleChange}
+                placeholder="Enter room number or name"
+                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+          </div>
+        );
+      case 2:
+        return (
+          <div className="schedule-step space-y-6">
+            <h3 className="text-xl font-bold text-gray-900">Set Schedule Details</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Start Date*</label>
+                <input
+                  type="date"
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">End Date (optional)</label>
+                <input
+                  type="date"
+                  name="endDate"
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Recurrence*</label>
+              <select
+                name="recurrence"
+                value={formData.recurrence}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+
+            {formData.recurrence === 'weekly' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Days of Week*</label>
+                <div className="flex flex-wrap gap-2">
+                  {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => toggleDaySelection(day)}
+                      className={`px-4 py-2 rounded-xl border ${
+                        formData.daysOfWeek.includes(day)
+                          ? 'bg-indigo-600 text-white border-indigo-600'
+                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      {day.substring(0, 3)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Period*</label>
+              <select
+                name="periodId"
+                value={formData.periodId}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="">Select a period</option>
+                <option value="1">08:00 AM - 09:30 AM</option>
+                <option value="2">09:30 AM - 11:00 AM</option>
+                <option value="3">11:00 AM - 12:30 PM</option>
+                <option value="4">01:30 PM - 03:00 PM</option>
+                <option value="5">03:00 PM - 04:30 PM</option>
+              </select>
+            </div>
+          </div>
+        );
+      case 3:
+        return (
+          <div className="schedule-step space-y-6">
+            <h3 className="text-xl font-bold text-gray-900">Review and Confirm</h3>
+            
+            <div className="bg-gray-50 p-6 rounded-xl">
+              <h4 className="font-medium text-lg mb-4">Schedule Summary</h4>
+              
+              <div className="space-y-3">
+                <div className="flex">
+                  <span className="text-gray-500 w-32">Teacher:</span>
+                  <span className="font-medium">
+                    {teachers.find(t => t.id === formData.teacherId)?.name || 'Not selected'}
+                  </span>
+                </div>
+                <div className="flex">
+                  <span className="text-gray-500 w-32">Class:</span>
+                  <span className="font-medium">
+                    {classes.find(c => c.id === formData.classId)?.name || 'Not selected'}
+                  </span>
+                </div>
+                <div className="flex">
+                  <span className="text-gray-500 w-32">Room:</span>
+                  <span className="font-medium">{formData.room || 'Not specified'}</span>
+                </div>
+                <div className="flex">
+                  <span className="text-gray-500 w-32">Schedule:</span>
+                  <span className="font-medium">
+                    {formData.recurrence === 'weekly' 
+                      ? formData.daysOfWeek.join(', ') + ' at ' + 
+                        (formData.periodId 
+                          ? ['08:00 AM', '09:30 AM', '11:00 AM', '01:30 PM', '03:00 PM'][parseInt(formData.periodId) - 1]
+                          : 'No time selected')
+                      : formData.recurrence + ' at selected time'}
+                  </span>
+                </div>
+                <div className="flex">
+                  <span className="text-gray-500 w-32">Duration:</span>
+                  <span className="font-medium">
+                    {formData.startDate} {formData.endDate ? `to ${formData.endDate}` : 'onwards'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {conflicts.length > 0 && (
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-xl">
+                <div className="flex items-start">
+                  <FaExclamationTriangle className="text-yellow-400 mr-3 mt-1 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-medium text-yellow-800">Potential Conflicts Detected</h4>
+                    <div className="mt-2 space-y-3">
+                      {conflicts.map((conflict, index) => (
+                        <div key={index} className="text-sm text-yellow-700">
+                          <p>{conflict.message}</p>
+                          {conflict.existing && (
+                            <div className="mt-1 ml-4 text-xs bg-yellow-100 p-2 rounded-lg">
+                              Existing: {Object.entries(conflict.existing).map(([key, value]) => (
+                                <span key={key} className="mr-3">{key}: {value}</span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      default:
+        return null;
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-3">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-700">Create Schedule</h2>
-        <div className="flex flex-wrap gap-3">
-          <button 
-            onClick={detectConflicts}
-            className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md flex items-center text-sm md:text-base"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-            Check Conflicts
-          </button>
-          <button 
-            onClick={generateSchedule}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center text-sm md:text-base"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
-            Generate Schedule
-          </button>
+    <div ref={containerRef} className="bg-white rounded-2xl shadow-xl p-6">
+      <div className="flex items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+          <FaCalendarAlt className="text-indigo-600 mr-3" />
+          Create Teacher Schedule
+        </h2>
+      </div>
+
+      {/* Progress Steps */}
+      <div className="mb-8">
+        <div className="flex justify-between relative">
+          <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
+          <div 
+            className="absolute top-1/2 left-0 h-1 bg-indigo-600 -z-10 transition-all duration-300"
+            style={{ width: `${(step - 1) * 50}%` }}
+          ></div>
+          
+          {[1, 2, 3].map((stepNum) => (
+            <div key={stepNum} className="flex flex-col items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                step >= stepNum ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600'
+              }`}>
+                {stepNum}
+              </div>
+              <span className={`mt-2 text-xs font-medium ${
+                step >= stepNum ? 'text-indigo-600' : 'text-gray-500'
+              }`}>
+                {stepNum === 1 ? 'Teacher & Class' : stepNum === 2 ? 'Schedule' : 'Review'}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
-      
-      {showConflictPanel && conflicts.length > 0 && (
-        <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-semibold text-red-800">Schedule Conflicts Detected</h3>
-            <button 
-              onClick={() => setShowConflictPanel(false)}
-              className="text-red-600 hover:text-red-800"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </button>
-          </div>
-          
-          <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
-            {conflicts.map((conflict, index) => (
-              <div key={index} className="p-3 bg-red-100 rounded-md">
-                <div className="font-medium text-red-800">
-                  Conflict: Teacher {conflict.teacher} double-booked on {conflict.day} during {conflict.period}
-                </div>
-                <div className="text-sm text-red-700 mt-1">
-                  Classes: {conflict.classes.map(c => c.class).join(', ')}
-                </div>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <button 
-                    onClick={() => {
-                      const [/*firstClass*/, ...otherClasses] = conflict.classes;
-                      setSchedule(prev => {
-                        const newSchedule = [...prev];
-                        otherClasses.forEach(({ class: className, periodIndex }) => {
-                          const classIndex = newSchedule.findIndex(c => c.class === className);
-                          const dayIndex = days.findIndex(d => d === conflict.day);
-                          if (classIndex !== -1 && dayIndex !== -1) {
-                            newSchedule[classIndex].days[dayIndex].periods[periodIndex].teacher = '';
-                          }
-                        });
-                        return newSchedule;
-                      });
-                      resolveConflict(index);
-                    }}
-                    className="text-sm bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-                  >
-                    Auto-clear
-                  </button>
-                  <button 
-                    onClick={() => resolveConflict(index)}
-                    className="text-sm bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded"
-                  >
-                    Mark as resolved
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      
-      <div className="overflow-x-auto">
-        {schedule.map((cls, classIndex) => (
-          <div key={cls.class} className="mb-8">
-            <h3 className="text-lg md:text-xl font-semibold mb-4">{cls.class}</h3>
-            
-            <div className="overflow-x-auto">
-              <table className="min-w-full border-collapse border border-gray-300 mb-6">
-                <thead>
-                  <tr>
-                    <th className="sticky left-0 z-10 bg-gray-100 border border-gray-300 p-2 min-w-[90px]">
-                      Day / Period
-                    </th>
-                    {periods.map(period => (
-                      <th key={period.name} className="border border-gray-300 p-2 bg-gray-100 min-w-[110px]">
-                        <div className="font-normal">{period.name}</div>
-                        <div className="text-xs text-gray-600">{period.start} - {period.end}</div>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {cls.days.map((day, dayIndex) => (
-                    <tr key={day.day}>
-                      <td className="sticky left-0 z-10 bg-gray-50 border border-gray-300 p-2 font-medium min-w-[90px]">
-                        {day.day}
-                      </td>
-                      {day.periods.map((period, periodIndex) => {
-                        const hasConflict = conflicts.some(conflict => 
-                          conflict.classes.some(c => 
-                            c.class === cls.class && 
-                            c.day === day.day && 
-                            c.period === period.period
-                          )
-                        );
-                        
-                        return (
-                          <td 
-                            key={`${dayIndex}-${periodIndex}`}
-                            className={`border border-gray-300 p-1 ${
-                              hasConflict ? 'conflict-cell' : ''
-                            } ${
-                              selectedCell?.classIndex === classIndex && 
-                              selectedCell?.dayIndex === dayIndex && 
-                              selectedCell?.periodIndex === periodIndex
-                                ? 'bg-blue-100' 
-                                : 'bg-white'
-                            }`}
-                            onClick={() => setSelectedCell({
-                              classIndex, 
-                              dayIndex, 
-                              periodIndex
-                            })}
-                          >
-                            <div className="p-1 h-20 md:h-24 flex flex-col">
-                              <select
-                                value={period.subject}
-                                onChange={(e) => handleCellChange(
-                                  classIndex, 
-                                  dayIndex, 
-                                  periodIndex, 
-                                  'subject', 
-                                  e.target.value
-                                )}
-                                className="w-full mb-1 px-1 py-1 text-xs md:text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                              >
-                                <option value="">Select Subject</option>
-                                {subjects.map(subject => (
-                                  <option key={subject} value={subject}>
-                                    {subject}
-                                  </option>
-                                ))}
-                              </select>
-                              
-                              {period.subject && (
-                                <select
-                                  value={period.teacher}
-                                  onChange={(e) => handleCellChange(
-                                    classIndex, 
-                                    dayIndex, 
-                                    periodIndex, 
-                                    'teacher', 
-                                    e.target.value
-                                  )}
-                                  className="w-full mt-1 px-1 py-1 text-xs md:text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                >
-                                  <option value="">Select Teacher</option>
-                                  {getTeachersForSubject(period.subject).map(teacher => (
-                                    <option key={teacher} value={teacher}>
-                                      {teacher}
-                                    </option>
-                                  ))}
-                                </select>
-                              )}
-                            </div>
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        ))}
+
+      {/* Form Content */}
+      {renderStep()}
+
+      {/* Form Actions */}
+      <div className="mt-8 flex justify-between">
+        <button
+          type="button"
+          onClick={() => step > 1 ? setStep(prev => prev - 1) : null}
+          disabled={step === 1}
+          className={`px-6 py-2 border rounded-xl ${
+            step === 1 
+              ? 'border-gray-300 text-gray-400 cursor-not-allowed' 
+              : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+          }`}
+        >
+          Back
+        </button>
+        
+        {step < 3 ? (
+          <button
+            type="button"
+            onClick={() => {
+              if (step === 2) {
+                checkConflicts();
+              } else {
+                setStep(prev => prev + 1);
+              }
+            }}
+            disabled={
+              (step === 1 && (!formData.teacherId || !formData.classId || !formData.room)) ||
+              (step === 2 && (!formData.startDate || !formData.periodId || 
+                (formData.recurrence === 'weekly' && formData.daysOfWeek.length === 0)))
+            }
+            className={`px-6 py-2 rounded-xl ${
+              (step === 1 && (!formData.teacherId || !formData.classId || !formData.room)) ||
+              (step === 2 && (!formData.startDate || !formData.periodId || 
+                (formData.recurrence === 'weekly' && formData.daysOfWeek.length === 0)))
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-indigo-600 text-white hover:bg-indigo-700'
+            }`}
+          >
+            {step === 2 ? 'Check Conflicts' : 'Next'}
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 flex items-center"
+          >
+            <FaCheck className="mr-2" />
+            Confirm Schedule
+          </button>
+        )}
       </div>
     </div>
   );

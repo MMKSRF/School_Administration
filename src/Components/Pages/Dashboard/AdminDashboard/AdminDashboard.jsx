@@ -1,20 +1,61 @@
-// src/AdminDashboard/AdminDashboard.jsx
-import React, { useState } from 'react';
+ // src/Components/Pages/Dashboard/AdminDashboard/AdminDashboard.jsx
+import React, { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 
 const AdminDashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const containerRef = useRef();
   
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Initial animation sequence
+      gsap.from('.sidebar', {
+        x: -50,
+        opacity: 100,
+        duration: 0.6,
+        ease: 'power2.out'
+      });
+      
+      gsap.from('.topbar', {
+        y: -30,
+        opacity: 100,
+        duration: 0.5,
+        delay: 0.2,
+        ease: 'power2.out'
+      });
+      
+      gsap.from('.main-content', {
+        opacity: 100,
+        y: 20,
+        duration: 0.6,
+        delay: 0.4,
+        ease: 'power2.out'
+      });
+    }, containerRef);
+    
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <div className="flex h-screen bg-blue-50">
-      <Sidebar isOpen={sidebarOpen} toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+    <div 
+      ref={containerRef}
+      className="flex h-screen bg-gray-100 overflow-hidden"
+    >
+      {/* Sidebar */}
+      <div className="sidebar">
+        <Sidebar />
+      </div>
       
       <div className="flex flex-col flex-1 overflow-hidden">
-        <Topbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+        {/* Topbar */}
+        <div className="topbar z-10">
+          <Topbar />
+        </div>
         
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+        {/* Main Content */}
+        <main className="main-content flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>

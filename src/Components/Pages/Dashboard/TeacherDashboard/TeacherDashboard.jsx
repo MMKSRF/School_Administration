@@ -1,5 +1,7 @@
 // src/Components/Pages/TeacherDashboard/TeacherDashboard.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
+
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import DashboardHome from './DashboardHome';
@@ -13,8 +15,6 @@ import LessonPlanner from './ScheduleManagement/LessonPlanner';
 const TeacherDashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activeStudentTab, setActiveStudentTab] = useState(0);
-  const [activeScheduleTab, setActiveScheduleTab] = useState(0);
   const [notifications, setNotifications] = useState([
     { id: 1, text: 'New assignment submission from Sarah', time: '2 min ago', read: false },
     { id: 2, text: 'Staff meeting reminder', time: '1 hour ago', read: false },
@@ -50,62 +50,7 @@ const TeacherDashboard = () => {
   };
 
   // Render active section
-  const renderActiveSection = () => {
-    switch(activeSection) {
-      case 'dashboard':
-        return <DashboardHome teacherData={teacherData} />;
-      case 'students':
-        return (
-          <div className="space-y-6">
-            <div className="flex flex-wrap gap-2 mb-6">
-              {['Attendance', 'Grades', 'Profiles'].map((tab, index) => (
-                <button
-                  key={index}
-                  className={`px-4 py-2 rounded-lg border transition-all ${
-                    activeStudentTab === index
-                      ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                  }`}
-                  onClick={() => setActiveStudentTab(index)}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-            
-            {activeStudentTab === 0 && <AttendanceTracker />}
-            {activeStudentTab === 1 && <GradeBook />}
-            {activeStudentTab === 2 && <StudentProfiles />}
-          </div>
-        );
-      case 'schedule':
-        return (
-          <div className="space-y-6">
-            <div className="flex flex-wrap gap-2 mb-6">
-              {['Daily', 'Calendar', 'Lessons'].map((tab, index) => (
-                <button
-                  key={index}
-                  className={`px-4 py-2 rounded-lg border transition-all ${
-                    activeScheduleTab === index
-                      ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                  }`}
-                  onClick={() => setActiveScheduleTab(index)}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-            
-            {activeScheduleTab === 0 && <DailySchedule />}
-            {activeScheduleTab === 1 && <CalendarView />}
-            {activeScheduleTab === 2 && <LessonPlanner />}
-          </div>
-        );
-      default:
-        return <DashboardHome teacherData={teacherData} />;
-    }
-  };
+ 
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -129,8 +74,9 @@ const TeacherDashboard = () => {
         />
         
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          {renderActiveSection()}
+        <main className="flex-1 overflow-y-auto p-0 md:p-0">
+
+          <Outlet/>
         </main>
       </div>
     </div>

@@ -1,76 +1,122 @@
-// src/AdminDashboard/Sidebar.jsx
-import React from 'react';
+// src/Components/Pages/Dashboard/AdminDashboard/Sidebar.jsx
+import React, { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
 import { NavLink } from 'react-router-dom';
+// import { NavLink, useLocation } from 'react-router-dom';
 import { 
-  HomeIcon, 
-  UsersIcon, 
-  ClockIcon, 
-  CalendarIcon, 
-  TableCellsIcon, 
-  ExclamationTriangleIcon,
-  ChartBarIcon
-} from '@heroicons/react/24/outline';
+  FaTachometerAlt, 
+  FaUserTie, 
+  FaUserGraduate, 
+  FaChalkboardTeacher,
+  FaClipboardList,
+  FaChartBar,
+  FaCog,
+  FaSignOutAlt,
+  FaChevronLeft
+} from 'react-icons/fa';
 
+const Sidebar = () => {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const containerRef = useRef();
+//   const location = useLocation();
+  
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      if (isExpanded) {
+        gsap.to('.sidebar-item', {
+          opacity: 1,
+          x: 0,
+          stagger: 0.05,
+          duration: 0.3,
+          ease: 'power2.out'
+        });
+      } else {
+        gsap.to('.sidebar-item', {
+          opacity: 100,
+          x: -10,
+          stagger: 0.05,
+          duration: 0.2,
+          ease: 'power2.in'
+        });
+      }
+    }, containerRef);
+    
+    return () => ctx.revert();
+  }, [isExpanded]);
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
+  const toggleSidebar = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   const navItems = [
-    { name: 'Dashboard', path: '/admin-dashboard', icon: HomeIcon },
-    { name: 'Manage Teachers', path: '/admin-dashboard/teachers', icon: UsersIcon },
-    { name: 'Set Periods', path: '/admin-dashboard/periods', icon: ClockIcon },
-    { name: 'Create Schedule', path: '/admin-dashboard/schedule/create', icon: CalendarIcon },
-    { name: 'View Timetable', path: '/admin-dashboard/timetable', icon: TableCellsIcon },
-    { name: 'Conflict Checker', path: '/admin-dashboard/conflicts', icon: ExclamationTriangleIcon },
-    { name: 'School Stats', path: '/admin-dashboard/stats', icon: ChartBarIcon },
+    { path: '/admin', label: 'Dashboard', icon: <FaTachometerAlt /> },
+    { path: '/admin/teachers', label: 'Manage Teachers', icon: <FaUserTie /> },
+    { path: '/admin/students', label: 'Manage Students', icon: <FaUserGraduate /> },
+    { path: '/admin/classes', label: 'Manage Classes', icon: <FaChalkboardTeacher /> },
+    { path: '/admin/schedule', label: 'Schedule', icon: <FaClipboardList /> },
+    { path: '/admin/requests', label: 'Requests', icon: <FaClipboardList /> },
+    { path: '/admin/reports', label: 'Reports', icon: <FaChartBar /> },
+    { path: '/admin/settings', label: 'Settings', icon: <FaCog /> }
   ];
 
   return (
-    <div className={`${isOpen ? 'w-64' : 'w-20'} bg-blue-600 text-white transition-all duration-300 flex flex-col`}>
-      <div className="p-4 flex items-center justify-between border-b border-blue-700">
-        {isOpen && <h1 className="text-xl font-bold">Aqimari Admin</h1>}
-        <button onClick={toggleSidebar} className="text-white focus:outline-none">
-          {isOpen ? 
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg> : 
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          }
+    <div 
+      ref={containerRef}
+      className={`h-full bg-white shadow-xl transition-all duration-300 ${
+        isExpanded ? 'w-64' : 'w-20'
+      }`}
+    >
+      {/* Logo and Toggle */}
+      <div className="p-5 border-b border-gray-200 flex items-center justify-between">
+        {isExpanded ? (
+          <div className="flex items-center">
+            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">
+              S
+            </div>
+            <span className="ml-3 text-xl font-bold text-gray-900">SchoolAdmin</span>
+          </div>
+        ) : (
+          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">
+            S
+          </div>
+        )}
+        <button 
+          onClick={toggleSidebar}
+          className="p-2 rounded-full hover:bg-gray-100 text-gray-600"
+        >
+          <FaChevronLeft className={`transition-transform ${isExpanded ? '' : 'rotate-180'}`} />
         </button>
       </div>
-      
-      <nav className="flex-1 py-4">
-        <ul>
-          {navItems.map((item) => (
-            <li key={item.name} className="mb-1">
-              <NavLink
-                to={item.path}
-                className={({ isActive }) => 
-                  `flex items-center px-4 py-3 transition-colors ${
-                    isActive 
-                      ? 'bg-blue-500 border-l-4 border-yellow-600' 
-                      : 'hover:bg-blue-500'
-                  }`
-                }
-              >
-                <item.icon className="h-6 w-6" />
-                {isOpen && <span className="ml-3">{item.name}</span>}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
-      
-      <div className="p-4 border-t border-blue-700">
-        <div className="flex items-center">
-          <div className="bg-gray-200 border-2 border-dashed rounded-xl w-10 h-10" />
-          {isOpen && (
-            <div className="ml-3">
-              <p className="text-sm font-medium">Admin User</p>
-              <p className="text-xs text-blue-200">admin@school.edu</p>
+
+      {/* Navigation */}
+      <nav className="mt-6 px-2">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) => `
+              sidebar-item flex items-center px-4 py-3 mb-1 rounded-xl transition-colors duration-200
+              ${isActive 
+                ? 'bg-indigo-100 text-indigo-600 font-medium' 
+                : 'text-gray-600 hover:bg-gray-100'}
+            `}
+          >
+            <div className="text-lg">
+              {item.icon}
             </div>
-          )}
-        </div>
+            {isExpanded && (
+              <span className="ml-4">{item.label}</span>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* Bottom Section */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+        <button className="sidebar-item w-full flex items-center px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100">
+          <FaSignOutAlt className="text-lg" />
+          {isExpanded && <span className="ml-4">Logout</span>}
+        </button>
       </div>
     </div>
   );
