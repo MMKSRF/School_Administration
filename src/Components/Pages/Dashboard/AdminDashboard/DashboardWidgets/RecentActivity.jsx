@@ -1,18 +1,26 @@
 // src/Components/Pages/Dashboard/AdminDashboard/DashboardWidgets/RecentActivity.jsx
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { 
-  FaUserPlus, 
-  FaChalkboardTeacher, 
-  FaCheckCircle, 
+import {
+  selectRecentActivity
+} from "../../../../../Redux/Selectors/AdminSelectors/adminSelectors.js";
+import {useSelector} from "react-redux";
+import {
+  FaUserPlus,
+  FaChalkboardTeacher,
+  FaCheckCircle,
   FaExclamationTriangle,
   FaClock
 } from 'react-icons/fa';
 
-const RecentActivity = ({ activities }) => {
+
+const RecentActivity = () => {
+
+  const activities = useSelector(selectRecentActivity)
+
   const containerRef = useRef();
   const itemRefs = useRef([]);
-  
+
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(itemRefs.current, {
@@ -23,7 +31,7 @@ const RecentActivity = ({ activities }) => {
         ease: 'power2.out'
       });
     }, containerRef);
-    
+
     return () => ctx.revert();
   }, [activities]);
 
@@ -58,7 +66,7 @@ const RecentActivity = ({ activities }) => {
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="bg-white rounded-2xl shadow-xl p-6"
     >
@@ -68,10 +76,10 @@ const RecentActivity = ({ activities }) => {
           View All
         </button>
       </div>
-      
+
       <div className="space-y-4">
         {activities?.map((activity, index) => (
-          <div 
+          <div
             key={index}
             ref={el => itemRefs.current[index] = el}
             className="flex items-start pb-4 border-b border-gray-100 last:border-0 last:pb-0"
@@ -81,7 +89,7 @@ const RecentActivity = ({ activities }) => {
                 {getActivityIcon(activity.type)}
               </div>
             </div>
-            
+
             <div className="ml-4 flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
                 {activity.title}
@@ -100,7 +108,7 @@ const RecentActivity = ({ activities }) => {
             </div>
           </div>
         ))}
-        
+
         {activities?.length === 0 && (
           <div className="text-center py-8">
             <div className="text-gray-400 mb-2">No recent activities</div>

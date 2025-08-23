@@ -23,7 +23,6 @@ import {
   selectAcademicLevels,
 
 
-
   selectLoading,
   selectSuccess,
   selectError,

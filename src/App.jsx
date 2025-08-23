@@ -3,6 +3,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import WelcomeBanner from '../src/Components/Ui/Basics/WelcomeBanner.jsx'
 
 import SchoolSpinner from './Components/Ui/SchoolSpinner';
 
@@ -100,7 +101,7 @@ function App() {
 
             {/* Admin Dashboard */}
             <Route path="/admin" element={<AdminDashboard />}>
-              <Route index element={<HomeRoomManagement />} />
+              <Route index element={<DashboardHome />} />
               <Route path="dashboard" element={<DashboardHome />} />
               
               {/* Teacher Management */}
@@ -144,7 +145,8 @@ function App() {
             </Route>
 
             {/* Catch All */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {/*<Route path="*" element={<Navigate to="/" replace />} />*/}
+            <Route path="*" element={<Navigate to="/"  />} />
           </Routes>
         </Suspense>
       </div>

@@ -71,6 +71,8 @@ const DashboardHome = ({ teacherData }) => {
             <h2 className="text-2xl font-bold">Welcome back, {teacherData.name}!</h2>
             <p className="mt-2 opacity-90">Here's what's happening with your classes today</p>
           </div>
+
+          
           <div className="mt-4 md:mt-0 flex space-x-3">
             <button className="bg-white text-indigo-600 hover:bg-indigo-50 px-4 py-2 rounded-lg font-medium text-sm">
               View Schedule
@@ -79,7 +81,10 @@ const DashboardHome = ({ teacherData }) => {
               Add New Task
             </button>
           </div>
+
+
         </div>
+
       </div>
 
       {/* Stats summary with animation */}

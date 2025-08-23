@@ -10,6 +10,7 @@ import reportsReducer from './Slices/reportsSlice.js';
 import requestsReducer from './Slices/requestsSlice.js';
 import studentsReducer from './Slices/studentsSlice.js';
 import teachersReducer from './Slices/teachersSlice.js';
+import adminReducer from "./Slices/AdminSlice/adminSlice.js";
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +20,10 @@ export const store = configureStore({
     forgotPassword: forgotPasswordReducer,
     joinSchool: joinSchoolReducer,
     requestSchool: requestSchoolReducer,
+
+
+    //DashBoard
+    admin: adminReducer,
     
     // Core Application Functionality
     classes: classesReducer,
