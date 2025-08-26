@@ -1,4 +1,4 @@
-// src/AdminDashboard/DashboardWidgets/WelcomeBanner.jsx
+// src/AdminDashboard/DashboardWidgets
 import React, { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 

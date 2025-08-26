@@ -91,6 +91,8 @@ function App() {
           <Routes>
 
             {/* Public Routes */}
+
+
             <Route path="/" element={<Layout />} />
             <Route path="/login" element={<Login />} />
             <Route path="/create-school" element={<CreateSchool />} />
@@ -103,6 +105,9 @@ function App() {
             <Route path="/admin" element={<AdminDashboard />}>
               <Route index element={<DashboardHome />} />
               <Route path="dashboard" element={<DashboardHome />} />
+
+            {/*HomeRoom*/}
+                <Route path={'homeroom'} element={<HomeRoomManagement/>}/>
               
               {/* Teacher Management */}
               <Route path="teachers" element={<ViewTeachers />} />

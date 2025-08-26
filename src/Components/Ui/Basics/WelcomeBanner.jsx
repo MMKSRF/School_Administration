@@ -46,8 +46,8 @@ const WelcomeBanner = ({userName, message, userRoleMessage,quickActions}) => {
         const ctx = gsap.context(() => {
             // Banner animation
             gsap.from(bannerRef.current, {
-                y: 0,
-                opacity: 100,
+                y: -20,
+                opacity: 0,
                 duration: 0.2,
                 ease: 'power2.out'
             });
@@ -101,7 +101,7 @@ const WelcomeBanner = ({userName, message, userRoleMessage,quickActions}) => {
                             <button
                                 key={index}
                                 ref={el => buttonRefs.current[index] = el}
-                                onClick={action.action}
+                                onClick={action?.action}
                                 className="flex items-center bg-white text-indigo-600 hover:bg-indigo-50 font-medium py-2 px-4 rounded-xl transition-all duration-300"
                             >
                                 {action.icon}
@@ -110,7 +110,7 @@ const WelcomeBanner = ({userName, message, userRoleMessage,quickActions}) => {
                         ))}
                     </div>
 
-                   
+
                 </div>
 
 

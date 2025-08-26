@@ -11,6 +11,7 @@ import {
   FaFileExport,
   FaCog
 } from 'react-icons/fa';
+import WelcomeBanner from '../../../Ui/Basics/WelcomeBanner.jsx'
 
 const DashboardHome = () => {
   const containerRef = useRef();
@@ -77,14 +78,22 @@ const DashboardHome = () => {
   return (
     <div ref={containerRef} className="space-y-6">
       {/* Welcome Section */}
-      <div className="welcome-section bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-2xl shadow-xl overflow-hidden">
-        <div className="p-6 md:p-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-white">Welcome back, Admin!</h1>
-          <p className="text-indigo-100 mt-2 max-w-2xl">
-            Here's what's happening with your school today. You have 3 pending requests and 2 schedule conflicts to resolve.
-          </p>
-        </div>
-      </div>
+
+       < WelcomeBanner
+           userName={'Admin Perez Endale'}
+           message={"Here's what's happening with your school today. You have 3 pending requests and 2 schedule conflicts to resolve."}
+           userRoleMessage={"This is User RoleMessage"}
+       />
+
+      {/*<div className="welcome-section bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-2xl shadow-xl overflow-hidden">*/}
+      {/*  <div className="p-6 md:p-8">*/}
+      {/*    <h1 className="text-2xl md:text-3xl font-bold text-white">Welcome back, Admin!</h1>*/}
+      {/*    <p className="text-indigo-100 mt-2 max-w-2xl">*/}
+      {/*      Here's what's happening with your school today. You have 3 pending requests and 2 schedule conflicts to resolve.*/}
+      {/*    </p>*/}
+      {/*  </div>*/}
+      {/*</div>*/}
+
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
