@@ -22,6 +22,7 @@ const initialState = {
         }
     ],
     dismissedAnnouncements: [],
+
     recentActivity:[
         {
             type: 'enrollment',
@@ -156,7 +157,19 @@ const initialState = {
             description: 'Board approved new AI Engineering major',
             time: '3 weeks ago',
             action: 'Curriculum'
-        }]
+        }],
+
+    miniReport:{
+        students:2,
+        studentChange:-1,
+        teachers:5,
+        teacherChange:1,
+        classes:23,
+        classChange:-1,
+        attendance:10,
+        attendanceChange:1
+    }
+
 
 }
 
@@ -167,13 +180,14 @@ const adminSlice = createSlice({
 
         setDismissedAnnouncements(state, action) {
             state.dismissedAnnouncements.push(action.payload)
-            
 
         },
         setAnnouncements(state, action) {
             state.announcements.push(action.payload)
         },
-    
+
+
+
 
     }
 })

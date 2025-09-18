@@ -39,10 +39,10 @@ const Login = () => {
       
       <main className="flex-grow">
         <TopSection 
-          tope="Welcome Back to Aqimari" 
+          tope="Welcome Back to Aqimari"
           bottom="Access your school's scheduling dashboard and continue managing your institution efficiently" 
         />
-        
+        Z
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row gap-12">

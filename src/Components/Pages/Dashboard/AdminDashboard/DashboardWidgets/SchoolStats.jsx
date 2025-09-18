@@ -38,13 +38,23 @@ useEffect(() => {
 
   return () => ctx.revert();
 }, [stats]);
+  {/*
+  stats should be like this
+  {
+    students: number of student enrolled this month ,
+    studentChange: 1 if it increases or -1 if it decreases ,
+
+    the same for the teachers , teacherChange and for classes , attendance
+
+  }
+  */}
 
   const statCards = [
     { 
       title: 'Total Students', 
       icon: <FaUsers className="text-indigo-500" size={24} />,
       value: stats?.students || 0,
-      change: stats?.studentChange || 0
+      change: stats?.studentChange || 0 // This will show if the value is 1 (increased) or  -1(decreased) from the last month
     },
     { 
       title: 'Teaching Staff', 
@@ -70,7 +80,7 @@ useEffect(() => {
   return (
     <div 
       ref={containerRef}
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 my-5"
     >
       {statCards.map((stat, index) => (
         <div 

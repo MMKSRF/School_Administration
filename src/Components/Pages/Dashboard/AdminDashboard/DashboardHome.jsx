@@ -2,7 +2,15 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { Link } from 'react-router-dom';
-import { 
+import SchoolStats from "./DashboardWidgets/SchoolStats.jsx";
+import RecentActivity  from "./DashboardWidgets/RecentActivity.jsx";
+import {useSelector} from "react-redux";
+
+
+import {miniReport} from "../../../../Redux/Selectors/AdminSelectors/adminSelectors.js";
+
+
+import {
   FaUsers, 
   FaChalkboardTeacher, 
   FaSchool, 
@@ -11,6 +19,7 @@ import {
   FaFileExport,
   FaCog
 } from 'react-icons/fa';
+
 import WelcomeBanner from '../../../Ui/Basics/WelcomeBanner.jsx'
 
 const DashboardHome = () => {
@@ -47,13 +56,13 @@ const DashboardHome = () => {
     return () => ctx.revert();
   }, []);
 
-  const stats = [
-    { value: '1,248', label: 'Total Students', icon: <FaUsers className="text-indigo-500" />, change: '+3.2%' },
-    { value: '58', label: 'Teaching Staff', icon: <FaChalkboardTeacher className="text-indigo-500" />, change: '+1.8%' },
-    { value: '42', label: 'Active Classes', icon: <FaSchool className="text-indigo-500" />, change: '0%' },
-    { value: '94.5%', label: 'Attendance Rate', icon: <FaChartLine className="text-indigo-500" />, change: '-0.7%' }
-  ];
-
+  // const stats = [
+  //   { value: '1,248', label: 'Total Students', icon: <FaUsers className="text-indigo-500" />, change: '+3.2%' },
+  //   { value: '58', label: 'Teaching Staff', icon: <FaChalkboardTeacher className="text-indigo-500" />, change: '+1.8%' },
+  //   { value: '42', label: 'Active Classes', icon: <FaSchool className="text-indigo-500" />, change: '0%' },
+  //   { value: '94.5%', label: 'Attendance Rate', icon: <FaChartLine className="text-indigo-500" />, change: '-0.7%' }
+  // ];
+  const stats = useSelector(miniReport)
   const quickActions = [
     { 
       title: 'Schedule Management', 
@@ -95,8 +104,13 @@ const DashboardHome = () => {
       {/*</div>*/}
 
 
+
+
+
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <SchoolStats stats={stats} />
+      {/*
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
           <div 
             key={index}
@@ -117,6 +131,8 @@ const DashboardHome = () => {
           </div>
         ))}
       </div>
+      */}
+
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -151,26 +167,35 @@ const DashboardHome = () => {
         ))}
       </div>
 
+
+
+
+
       {/* Recent Activity */}
-      <div className="bg-white rounded-2xl shadow-xl p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h2>
-        <div className="space-y-4">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="flex items-start pb-4 border-b border-gray-100 last:border-0 last:pb-0">
-              <div className="flex-shrink-0 mt-1">
-                <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
-                  <FaUsers />
-                </div>
-              </div>
-              <div className="ml-4">
-                <p className="font-medium text-gray-900">New student enrolled in Grade 5</p>
-                <p className="text-sm text-gray-500 mt-1">Sarah Johnson joined Section B</p>
-                <div className="mt-2 text-xs text-gray-400">10 minutes ago</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+
+      <RecentActivity
+          // onViewAll={() => console.log('View all clicked')}
+          onResolveActivity={(index, activity, success) =>
+              console.log('Activity resolved:', index, activity, success)
+          }
+          editable={true}
+          maxItems={2}
+      />
+
+
+      <RecentActivity
+          useRedux={false}
+          customActivities={[
+            { type: 'enrollment', title: 'New Student', description: 'John enrolled', time: '10:00 AM' },
+            { type: 'approval', title: 'Request Approved', description: 'Library access granted', time: '11:30 AM' }
+          ]}
+          theme="dark"
+          animationType="fade"
+          editable={true}
+
+      />
+
+
     </div>
   );
 };
