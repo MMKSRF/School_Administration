@@ -135,6 +135,10 @@ const DashboardHome = () => {
 
 
       {/* Quick Actions */}
+
+
+
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {quickActions.map((action, index) => (
           <Link
@@ -167,12 +171,14 @@ const DashboardHome = () => {
         ))}
       </div>
 
+      
+
 
 
 
 
       {/* Recent Activity */}
-
+{/* 
       <RecentActivity
           // onViewAll={() => console.log('View all clicked')}
           onResolveActivity={(index, activity, success) =>
@@ -180,18 +186,36 @@ const DashboardHome = () => {
           }
           editable={true}
           maxItems={2}
-      />
+      /> */}
 
 
       <RecentActivity
           useRedux={false}
-          customActivities={[
-            { type: 'enrollment', title: 'New Student', description: 'John enrolled', time: '10:00 AM' },
-            { type: 'approval', title: 'Request Approved', description: 'Library access granted', time: '11:30 AM' }
-          ]}
+          customActivities = {[
+  { type: 'enrollment', title: 'New Student', description: 'John enrolled', time: '10:00 AM' },
+  { type: 'approval', title: 'Request Approved', description: 'Library access granted', time: '11:30 AM' },
+  { type: 'event', title: 'Sports Day', description: 'Event scheduled for next week', time: '09:00 AM' },
+  { type: 'attendance', title: 'Attendance Marked', description: 'Grade 8 attendance completed', time: '08:45 AM' },
+  { type: 'notice', title: 'Notice Sent', description: 'Parents notified about PTA meeting', time: '12:15 PM' },
+  { type: 'enrollment', title: 'New Student', description: 'Emily joined Grade 5', time: '01:20 PM' },
+  { type: 'approval', title: 'Leave Approved', description: 'Teacher leave approved', time: '02:00 PM' },
+  { type: 'event', title: 'Workshop', description: 'Math workshop announced', time: '03:10 PM' },
+  { type: 'attendance', title: 'Late Arrival', description: 'Student arrived late', time: '08:55 AM' },
+  { type: 'notice', title: 'Fee Reminder', description: 'Fee due notice sent', time: '04:30 PM' },
+  { type: 'enrollment', title: 'Transfer Student', description: 'Alex transferred from another school', time: '10:40 AM' },
+  { type: 'approval', title: 'Document Verified', description: 'Birth certificate verified', time: '11:50 AM' },
+  { type: 'event', title: 'Science Fair', description: 'Science fair scheduled', time: '02:30 PM' },
+  { type: 'attendance', title: 'Absence Noted', description: 'Student absent today', time: '09:15 AM' },
+  { type: 'notice', title: 'Holiday Notice', description: 'School closed on Friday', time: '05:00 PM' },
+  { type: 'enrollment', title: 'New Admission', description: 'Sophia admitted to Grade 2', time: '12:40 PM' },
+  { type: 'approval', title: 'Request Denied', description: 'Trip request denied', time: '01:55 PM' },
+  { type: 'event', title: 'Parent Meeting', description: 'Parent-teacher meeting scheduled', time: '03:45 PM' },
+  { type: 'attendance', title: 'Attendance Updated', description: 'Grade 10 attendance updated', time: '08:35 AM' },
+  { type: 'notice', title: 'Exam Schedule', description: 'Exam dates announced', time: '06:10 PM'}]}
           theme="dark"
           animationType="fade"
-          editable={true}
+          editable={false}
+          maxItems={5}
 
       />
 

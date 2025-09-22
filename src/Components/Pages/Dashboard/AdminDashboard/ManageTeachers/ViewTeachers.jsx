@@ -1,5 +1,6 @@
 // src/Components/Pages/Dashboard/AdminDashboard/ManageTeachers/TeacherSettings.jsx
 import React, { useState } from 'react';
+import AddTeacher from './AddTeacher.jsx';
 import { FaUserPlus, FaSearch, FaFilter, FaEdit, FaTrash, FaUser, FaEnvelope, FaPhone, FaGraduationCap, FaBook, FaCalendarAlt, FaLock } from 'react-icons/fa';
 
 const ViewTeachers = () => {
@@ -146,7 +147,9 @@ const ViewTeachers = () => {
   ];
 
   return (
+     
     <div className="bg-white rounded-2xl shadow-xl p-6">
+
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
@@ -310,370 +313,105 @@ const ViewTeachers = () => {
         </div>
       </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       {/* Add Teacher Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                <FaUserPlus className="mr-2 text-indigo-600" />
-                Add New Teacher
-              </h3>
-            </div>
-            <div className="p-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                  <input
-                    type="text"
-                    value={newTeacher.name}
-                    onChange={(e) => setNewTeacher({...newTeacher, name: e.target.value})}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Enter full name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <input
-                    type="email"
-                    value={newTeacher.email}
-                    onChange={(e) => setNewTeacher({...newTeacher, email: e.target.value})}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Enter email address"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                  <input
-                    type="text"
-                    value={newTeacher.phone}
-                    onChange={(e) => setNewTeacher({...newTeacher, phone: e.target.value})}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Enter phone number"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                  <select
-                    value={newTeacher.status}
-                    onChange={(e) => setNewTeacher({...newTeacher, status: e.target.value})}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  >
-                    <option value="Active">Active</option>
-                    <option value="On Leave">On Leave</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Subjects</label>
-                <div className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={subjectInput}
-                    onChange={(e) => setSubjectInput(e.target.value)}
-                    className="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Add a subject"
-                  />
-                  <button 
-                    onClick={addSubject}
-                    className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                  >
-                    Add
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {newTeacher.subjects.map((subject, idx) => (
-                    <div key={idx} className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                      {subject}
-                      <button 
-                        onClick={() => setNewTeacher({
-                          ...newTeacher, 
-                          subjects: newTeacher.subjects.filter((_, i) => i !== idx)
-                        })}
-                        className="ml-2 text-blue-600 hover:text-blue-900"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Classes</label>
-                <div className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={classInput}
-                    onChange={(e) => setClassInput(e.target.value)}
-                    className="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Add a class"
-                  />
-                  <button 
-                    onClick={addClass}
-                    className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                  >
-                    Add
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {newTeacher.classes.map((cls, idx) => (
-                    <div key={idx} className="flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full">
-                      {cls}
-                      <button 
-                        onClick={() => setNewTeacher({
-                          ...newTeacher, 
-                          classes: newTeacher.classes.filter((_, i) => i !== idx)
-                        })}
-                        className="ml-2 text-purple-600 hover:text-purple-900"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Permissions</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {permissionOptions.map((perm, idx) => (
-                    <div key={idx} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={newTeacher.permissions.includes(perm)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setNewTeacher({
-                              ...newTeacher,
-                              permissions: [...newTeacher.permissions, perm]
-                            });
-                          } else {
-                            setNewTeacher({
-                              ...newTeacher,
-                              permissions: newTeacher.permissions.filter(p => p !== perm)
-                            });
-                          }
-                        }}
-                        className="h-4 w-4 text-indigo-600 rounded focus:ring-indigo-500"
-                      />
-                      <label className="ml-2 text-sm text-gray-700">{perm}</label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="p-4 bg-gray-50 flex justify-end gap-3">
-              <button 
-                onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-100"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleAddTeacher}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700"
-              >
-                Add Teacher
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+     
+
+
+      {showAddModal && <AddTeacher setShowAddModal={setShowAddModal}/> }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       {/* Edit Teacher Modal */}
+      
       {showEditModal && currentTeacher && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                <FaEdit className="mr-2 text-indigo-600" />
-                Edit Teacher: {currentTeacher.name}
-              </h3>
-            </div>
-            <div className="p-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                  <input
-                    type="text"
-                    value={currentTeacher.name}
-                    onChange={(e) => setCurrentTeacher({...currentTeacher, name: e.target.value})}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <input
-                    type="email"
-                    value={currentTeacher.email}
-                    onChange={(e) => setCurrentTeacher({...currentTeacher, email: e.target.value})}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                  <input
-                    type="text"
-                    value={currentTeacher.phone}
-                    onChange={(e) => setCurrentTeacher({...currentTeacher, phone: e.target.value})}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                  <select
-                    value={currentTeacher.status}
-                    onChange={(e) => setCurrentTeacher({...currentTeacher, status: e.target.value})}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  >
-                    <option value="Active">Active</option>
-                    <option value="On Leave">On Leave</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Subjects</label>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {currentTeacher.subjects.map((subject, idx) => (
-                    <div key={idx} className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                      {subject}
-                      <button 
-                        onClick={() => setCurrentTeacher({
-                          ...currentTeacher, 
-                          subjects: currentTeacher.subjects.filter((_, i) => i !== idx)
-                        })}
-                        className="ml-2 text-blue-600 hover:text-blue-900"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={subjectInput}
-                    onChange={(e) => setSubjectInput(e.target.value)}
-                    className="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Add a subject"
-                  />
-                  <button 
-                    onClick={() => {
-                      if (subjectInput && !currentTeacher.subjects.includes(subjectInput)) {
-                        setCurrentTeacher({
-                          ...currentTeacher,
-                          subjects: [...currentTeacher.subjects, subjectInput]
-                        });
-                        setSubjectInput('');
-                      }
-                    }}
-                    className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                  >
-                    Add
-                  </button>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Classes</label>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {currentTeacher.classes.map((cls, idx) => (
-                    <div key={idx} className="flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full">
-                      {cls}
-                      <button 
-                        onClick={() => setCurrentTeacher({
-                          ...currentTeacher, 
-                          classes: currentTeacher.classes.filter((_, i) => i !== idx)
-                        })}
-                        className="ml-2 text-purple-600 hover:text-purple-900"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={classInput}
-                    onChange={(e) => setClassInput(e.target.value)}
-                    className="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Add a class"
-                  />
-                  <button 
-                    onClick={() => {
-                      if (classInput && !currentTeacher.classes.includes(classInput)) {
-                        setCurrentTeacher({
-                          ...currentTeacher,
-                          classes: [...currentTeacher.classes, classInput]
-                        });
-                        setClassInput('');
-                      }
-                    }}
-                    className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                  >
-                    Add
-                  </button>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Permissions</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {permissionOptions.map((perm, idx) => (
-                    <div key={idx} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={currentTeacher.permissions.includes(perm)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setCurrentTeacher({
-                              ...currentTeacher,
-                              permissions: [...currentTeacher.permissions, perm]
-                            });
-                          } else {
-                            setCurrentTeacher({
-                              ...currentTeacher,
-                              permissions: currentTeacher.permissions.filter(p => p !== perm)
-                            });
-                          }
-                        }}
-                        className="h-4 w-4 text-indigo-600 rounded focus:ring-indigo-500"
-                      />
-                      <label className="ml-2 text-sm text-gray-700">{perm}</label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="p-4 bg-gray-50 flex justify-end gap-3">
-              <button 
-                onClick={() => setShowEditModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-100"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleEditTeacher}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700"
-              >
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </div>
+        <div></div>
       )}
     </div>
   );
 };
 
 export default ViewTeachers;
-// // src/Components/Pages/Dashboard/AdminDashboard/ManageTeachers/ViewTeachers.jsx
+
 // import React, { useEffect, useRef, useState } from 'react';
 // import { gsap } from 'gsap';
 // import { useSelector, useDispatch } from 'react-redux';
