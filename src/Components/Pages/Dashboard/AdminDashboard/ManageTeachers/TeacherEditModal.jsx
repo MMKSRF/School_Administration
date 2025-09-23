@@ -1,18 +1,19 @@
-// src/Components/Pages/Dashboard/AdminDashboard/ManageTeachers/AddTeacher.jsx
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { useDispatch } from 'react-redux';
-import { addTeacher } from '../../../../../Redux/Slices/teachersSlice';
-import { FaUserPlus, FaCheck, FaTimes, FaArrowLeft, FaExclamationTriangle, FaHome } from 'react-icons/fa';
+import { FaEdit, FaTimes, FaArrowLeft, FaExclamationTriangle, FaHome, FaCheck, FaUserPlus } from 'react-icons/fa';
 import { FiChevronDown } from 'react-icons/fi';
 
-const AddTeacher = ({ setShowAddModal, setTeachers }) => {
-  const dispatch = useDispatch();
+export default function TeacherEditModal({ setShowEditModal, currentTeacher, setCurrentTeacher, handleEditTeacher }) {
   const formRef = useRef();
   const modalRef = useRef();
   const [step, setStep] = useState(1);
-  
-  // Define permission options for teachers
+  const [isFormDirty, setIsFormDirty] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSubjectDropdown, setShowSubjectDropdown] = useState(false);
+  const [showClassDropdown, setShowClassDropdown] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  // Define permission options matching AddTeacher
   const permissionOptions = [
     'View grades',
     'Edit grades',
@@ -23,7 +24,7 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
     'Full access'
   ];
 
-  // Generate available classes (Grade 1-12 with sections A-D)
+  // Generate available classes matching AddTeacher
   const generateAvailableClasses = () => {
     const classes = [];
     const grades = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -38,21 +39,27 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
   };
 
   const availableClasses = generateAvailableClasses();
+  const availableSubjects = [
+    'Mathematics', 'Science', 'English', 'History', 
+    'Geography', 'Physics', 'Chemistry', 'Biology',
+    'Computer Science', 'Art', 'Music', 'Physical Education'
+  ];
 
+  // Initialize form data with current teacher data, filling missing fields with defaults
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    type: 'full_time',
-    status: 'Active',
-    subjects: [],
-    qualifications: '',
-    joiningDate: new Date().toISOString().split('T')[0],
-    permissions: [],
-    assignedClasses: [], // Array of classes the teacher is assigned to teach
-    homeroomClass: '', // Single class for which the teacher is homeroom teacher
-    availability: {
+    name: currentTeacher.name || '',
+    email: currentTeacher.email || '',
+    phone: currentTeacher.phone || '',
+    address: currentTeacher.address || '',
+    type: currentTeacher.type || 'full_time',
+    status: currentTeacher.status || 'Active',
+    subjects: currentTeacher.subjects || [],
+    qualifications: currentTeacher.qualifications || '',
+    joiningDate: currentTeacher.joiningDate || new Date().toISOString().split('T')[0],
+    permissions: currentTeacher.permissions || [],
+    assignedClasses: currentTeacher.assignedClasses || [],
+    homeroomClass: currentTeacher.homeroomClass || '',
+    availability: currentTeacher.availability || {
       monday: { start: '08:00', end: '16:00', available: true },
       tuesday: { start: '08:00', end: '16:00', available: true },
       wednesday: { start: '08:00', end: '16:00', available: true },
@@ -63,61 +70,27 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
     }
   });
 
-  const [errors, setErrors] = useState({});
-  const [showSubjectDropdown, setShowSubjectDropdown] = useState(false);
-  const [showClassDropdown, setShowClassDropdown] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [isFormDirty, setIsFormDirty] = useState(false);
-
-  const availableSubjects = [
-    'Mathematics', 'Science', 'English', 'History', 
-    'Geography', 'Physics', 'Chemistry', 'Biology',
-    'Computer Science', 'Art', 'Music', 'Physical Education'
-  ];
-
-  function onBack(){
-    setShowAddModal(false)
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      address: '',
-      type: 'full_time',
-      status: 'Active',
-      subjects: [],
-      qualifications: '',
-      joiningDate: new Date().toISOString().split('T')[0],
-      permissions: [],
-      assignedClasses: [],
-      homeroomClass: '',
-      availability: {
-        monday: { start: '08:00', end: '16:00', available: true },
-        tuesday: { start: '08:00', end: '16:00', available: true },
-        wednesday: { start: '08:00', end: '16:00', available: true },
-        thursday: { start: '08:00', end: '16:00', available: true },
-        friday: { start: '08:00', end: '16:00', available: true },
-        saturday: { start: '08:00', end: '16:00', available: false },
-        sunday: { start: '08:00', end: '16:00', available: false }
-      }
-    })
-  }
+  // Update currentTeacher when formData changes
+  useEffect(() => {
+    setCurrentTeacher(formData);
+  }, [formData, setCurrentTeacher]);
 
   // Check if form has been modified
   useEffect(() => {
     const initialFormData = {
-      name: '',
-      email: '',
-      phone: '',
-      address: '',
-      type: 'full_time',
-      status: 'Active',
-      subjects: [],
-      qualifications: '',
-      joiningDate: new Date().toISOString().split('T')[0],
-      permissions: [],
-      assignedClasses: [],
-      homeroomClass: '',
-      availability: {
+      name: currentTeacher.name || '',
+      email: currentTeacher.email || '',
+      phone: currentTeacher.phone || '',
+      address: currentTeacher.address || '',
+      type: currentTeacher.type || 'full_time',
+      status: currentTeacher.status || 'Active',
+      subjects: currentTeacher.subjects || [],
+      qualifications: currentTeacher.qualifications || '',
+      joiningDate: currentTeacher.joiningDate || new Date().toISOString().split('T')[0],
+      permissions: currentTeacher.permissions || [],
+      assignedClasses: currentTeacher.assignedClasses || [],
+      homeroomClass: currentTeacher.homeroomClass || '',
+      availability: currentTeacher.availability || {
         monday: { start: '08:00', end: '16:00', available: true },
         tuesday: { start: '08:00', end: '16:00', available: true },
         wednesday: { start: '08:00', end: '16:00', available: true },
@@ -133,8 +106,9 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
     };
 
     setIsFormDirty(checkFormDirty());
-  }, [formData]);
+  }, [formData, currentTeacher]);
 
+  // GSAP Animations
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from('.form-container', {
@@ -148,7 +122,6 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
     return () => ctx.revert();
   }, [step]);
 
-  // Animation for confirmation modal
   useEffect(() => {
     if (showConfirmModal && modalRef.current) {
       gsap.fromTo(modalRef.current, 
@@ -158,6 +131,7 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
     }
   }, [showConfirmModal]);
 
+  // Validation function
   const validateStep = (step) => {
     const newErrors = {};
     
@@ -179,19 +153,18 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Form handlers
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Handle permission toggle
   const togglePermission = (permission) => {
     setFormData(prev => {
       const newPermissions = prev.permissions.includes(permission)
         ? prev.permissions.filter(p => p !== permission)
         : [...prev.permissions, permission];
       
-      // If "Full access" is selected, automatically select all other permissions
       if (permission === 'Full access') {
         if (newPermissions.includes('Full access')) {
           return { ...prev, permissions: [...permissionOptions] };
@@ -200,7 +173,6 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
         }
       }
       
-      // If all other permissions are selected, automatically check "Full access"
       const otherPermissions = permissionOptions.filter(p => p !== 'Full access');
       const hasAllOtherPermissions = otherPermissions.every(p => 
         permission === p ? newPermissions.includes(p) : prev.permissions.includes(p)
@@ -209,20 +181,17 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
       if (hasAllOtherPermissions) {
         return { ...prev, permissions: [...newPermissions, 'Full access'] };
       } else {
-        // Remove "Full access" if not all permissions are selected
         return { ...prev, permissions: newPermissions.filter(p => p !== 'Full access') };
       }
     });
   };
 
-  // Handle class assignment
   const toggleAssignedClass = (classItem) => {
     setFormData(prev => {
       const newAssignedClasses = prev.assignedClasses.includes(classItem)
         ? prev.assignedClasses.filter(c => c !== classItem)
         : [...prev.assignedClasses, classItem];
       
-      // If homeroom class is removed from assigned classes, clear homeroom class
       if (prev.homeroomClass === classItem && !newAssignedClasses.includes(classItem)) {
         return { ...prev, assignedClasses: newAssignedClasses, homeroomClass: '' };
       }
@@ -231,12 +200,20 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
     });
   };
 
-  // Handle homeroom class selection
   const handleHomeroomClassChange = (classItem) => {
     setFormData(prev => ({
       ...prev,
       homeroomClass: classItem
     }));
+  };
+
+  const toggleSubject = (subject) => {
+    setFormData(prev => {
+      const newSubjects = prev.subjects.includes(subject)
+        ? prev.subjects.filter(s => s !== subject)
+        : [...prev.subjects, subject];
+      return { ...prev, subjects: newSubjects };
+    });
   };
 
   const handleAvailabilityChange = (day, field, value) => {
@@ -265,15 +242,7 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
     }));
   };
 
-  const toggleSubject = (subject) => {
-    setFormData(prev => {
-      const newSubjects = prev.subjects.includes(subject)
-        ? prev.subjects.filter(s => s !== subject)
-        : [...prev.subjects, subject];
-      return { ...prev, subjects: newSubjects };
-    });
-  };
-
+  // Step navigation
   const handleNext = () => {
     if (validateStep(step)) {
       setStep(prev => prev + 1);
@@ -291,9 +260,7 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateStep(step)) {
-      dispatch(addTeacher(formData));
-      setTeachers(prv => ([formData, ...prv]))
-      if (onBack) onBack();
+      handleEditTeacher(formData);
     }
   };
 
@@ -301,18 +268,19 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
     if (isFormDirty) {
       setShowConfirmModal(true);
     } else {
-      onBack();
+      setShowEditModal(false);
     }
   };
 
   const handleConfirmClose = () => {
-    onBack();
+    setShowEditModal(false);
   };
 
   const handleCancelClose = () => {
     setShowConfirmModal(false);
   };
 
+  // Render steps matching AddTeacher component
   const renderStep = () => {
     switch(step) {
       case 1:
@@ -520,7 +488,6 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
             <h3 className="text-lg font-medium text-gray-900">Class Assignments</h3>
             <p className="text-sm text-gray-500">Assign classes to this teacher and set homeroom class</p>
             
-            {/* Assigned Classes Section */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Assigned Classes</label>
               <div className="relative">
@@ -569,7 +536,6 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
               )}
             </div>
 
-            {/* Homeroom Class Section */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Homeroom Class <span className="text-gray-500 text-xs">(Optional)</span>
@@ -602,7 +568,6 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
               </p>
             </div>
 
-            {/* Summary */}
             {formData.assignedClasses.length > 0 && (
               <div className="p-4 bg-green-50 rounded-xl">
                 <h4 className="font-medium text-green-800 mb-2">Class Assignment Summary:</h4>
@@ -732,7 +697,10 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
             >
               <FaArrowLeft className="text-gray-600" />
             </button>
-            <h2 className="text-2xl font-bold text-gray-900">Add New Teacher</h2>
+            <div className="flex items-center">
+              <FaEdit className="mr-2 text-indigo-600" />
+              <h2 className="text-2xl font-bold text-gray-900">Edit Teacher: {formData.name}</h2>
+            </div>
           </div>
           
           <button
@@ -743,7 +711,7 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
           </button>
         </div>
 
-        {/* Progress Steps - Updated for 5 steps */}
+        {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex justify-between relative">
             <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-200/50 -z-10"></div>
@@ -800,13 +768,11 @@ const AddTeacher = ({ setShowAddModal, setTeachers }) => {
               className="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 flex items-center transition-colors"
             >
               <FaUserPlus className="mr-2" />
-              Add Teacher
+              Update Teacher
             </button>
           )}
         </div>
       </div>
     </div>
   );
-};
-
-export default AddTeacher;
+}

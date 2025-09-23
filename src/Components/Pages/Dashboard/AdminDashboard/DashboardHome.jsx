@@ -11,10 +11,6 @@ import {miniReport} from "../../../../Redux/Selectors/AdminSelectors/adminSelect
 
 
 import {
-  FaUsers, 
-  FaChalkboardTeacher, 
-  FaSchool, 
-  FaChartLine,
   FaCalendarAlt,
   FaFileExport,
   FaCog
