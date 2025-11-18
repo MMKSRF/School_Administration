@@ -3,7 +3,7 @@
     const initialState =  {
         formData:{ 
             schoolName: '',
-            schoolId: '',
+            schoolId: '',// must be handled by the backend to ensure uniqueness
             email: '', //This is the school Email 
             adminName: '',
             adminEmail: '',

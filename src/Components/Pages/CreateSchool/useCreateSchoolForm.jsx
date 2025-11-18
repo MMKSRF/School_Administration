@@ -111,7 +111,7 @@ const useCreateSchoolForm = () => {
 
     if (step === 1) {
       if (!formData.schoolName.trim()) newErrors.schoolName = 'School name is required';
-      if (!formData.schoolId.trim()) newErrors.schoolId = 'School ID is required';
+      // if (!formData.schoolId.trim()) newErrors.schoolId = 'School ID is required';
       if (!formData.email.trim()) newErrors.email = 'Email is required';
       else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Email is invalid';
       if (!formData.phoneNumber?.trim()) newErrors.phoneNumber = 'Phone number is required';
