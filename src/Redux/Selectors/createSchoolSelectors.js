@@ -1,6 +1,6 @@
     // Selectors for formData fields
 export const selectSchoolName = (state) => state.createSchool.formData.schoolName;
-export const selectSchoolId = (state) => state.createSchool.formData.schoolId;
+// export const selectSchoolId = (state) => state.createSchool.formData.schoolId;
 export const selectEmail = (state) => state.createSchool.formData.email;
 export const selectAdminName = (state) => state.createSchool.formData.adminName;
 export const selectAdminEmail = (state) => state.createSchool.formData.adminEmail;

@@ -1,6 +1,14 @@
 import React from 'react';
 
-const Step3ConfirmTerms = ({ loading /*handleSubmit*/ }) => {
+const Step3ConfirmTerms = ({ loading, handleSubmit }) => {
+
+
+
+  function pass (handleSubmit){
+
+    console.log(handleSubmit)
+
+  }
   return (
     <div className="space-y-6 form-section">
       <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">

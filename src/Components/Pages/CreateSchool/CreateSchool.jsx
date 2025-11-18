@@ -170,7 +170,7 @@ useEffect(() => {
                         {step === 3 && (
                           <Step3ConfirmTerms
                             loading={loading}
-                            handleSubmit={handleSubmit}
+                            // handleSubmit={handleSubmit}
                           />
                         )}
                       </form>

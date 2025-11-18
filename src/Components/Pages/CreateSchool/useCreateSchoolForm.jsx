@@ -10,7 +10,7 @@ import {
 
 import {
   selectSchoolName,
-  selectSchoolId,
+  // selectSchoolId,
   selectEmail,
   selectAdminName,
   selectAdminEmail,
@@ -35,7 +35,7 @@ const useCreateSchoolForm = () => {
 
   const formData = {
     schoolName: useSelector(selectSchoolName),
-    schoolId: useSelector(selectSchoolId),
+    // schoolId: useSelector(selectSchoolId), // this will be given by the backend to ensure uniqueness
     email: useSelector(selectEmail),
     adminName: useSelector(selectAdminName),
     adminEmail: useSelector(selectAdminEmail),
@@ -148,6 +148,34 @@ const useCreateSchoolForm = () => {
     if (validateStep()) {
       dispatch(setLoading(true));
       dispatch(setError(null));
+
+
+
+      console.log('Submitting form data:', formData); // right now the form is Complite  and when you build  the backend put make it to send this to the backend and let it generate schoolId 
+      // this is how the data looks like 
+
+//       {
+//     "schoolName": "Perez Endale",
+//     "email": "perezendale247@gmail.com", // this is the school email
+//     "adminName": "setFormData",
+//     "adminEmail": "perezendale247@gmail.com",
+//     "password": "useCreateSchoolForm",
+//     "confirmPassword": "useCreateSchoolForm",
+//     "schoolType": "international", 
+//     "region": "Benishangul-Gumuz",
+//     "schoolSize": "medium",
+//     "phoneNumber": "0909540000", // school phone number 
+//     "academicLevels": [
+//         "kg"
+//     ]
+// }
+
+
+
+
+
+
+
 
       setTimeout(() => {
         const shouldSucceed = Math.random() > 0.3;

@@ -17,7 +17,7 @@ const Step1SchoolInfo = ({ formData, errors, handleChange, handleAcademicLevelCh
             </svg>}
       />
       
-      <BasicInput
+      {/* <BasicInput
         label='School ID (Shortcode)'
         name='schoolId'
         type='text'
@@ -28,7 +28,7 @@ const Step1SchoolInfo = ({ formData, errors, handleChange, handleAcademicLevelCh
         icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
             </svg>}
-      />
+      /> */}
       
       <BasicInput 
         label='School Email'
