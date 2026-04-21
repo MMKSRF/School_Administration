@@ -20,7 +20,7 @@ const ForgotPassword = () => {
     handleVerifyCode,
     handleResetPassword,
     handleResendCode,
-    setStep
+    goToStep
   } = useForgotPasswordForm();
 
   useEffect(() => {
@@ -88,7 +88,7 @@ const ForgotPassword = () => {
                       handleChange={handleChange}
                       handleVerifyCode={handleVerifyCode}
                       handleResendCode={handleResendCode}
-                      setStep={setStep}
+                      setStep={goToStep}
                       loading={loading}
                     />
                   )}
@@ -99,7 +99,7 @@ const ForgotPassword = () => {
                       errors={errors}
                       handleChange={handleChange}
                       handleResetPassword={handleResetPassword}
-                      setStep={setStep}
+                      setStep={goToStep}
                       loading={loading}
                     />
                   )}

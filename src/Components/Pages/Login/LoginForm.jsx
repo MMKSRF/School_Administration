@@ -1,15 +1,17 @@
 import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import BasicInput from '../../Ui/BasicInput';
 import SocialLoginButtons from './SocialLoginButtons';
 import { useSelector , useDispatch} from 'react-redux';
 
 
 
-import {selectPassword,selectSchoolId,selectLoading,selectErrors,selectShowPassword,selectNewErrors} from '../../../Redux/Selectors/loginSelectors';
+import {selectPassword,selectSchoolId,selectLoading,selectErrors,selectShowPassword} from '../../../Redux/Selectors/loginSelectors';
 import { setFormData as setFormDataRedux  ,setErrors, setLoading, setShowPassword ,setNewErrors} from '../../../Redux/Slices/loginSlice'
 
 
 const LoginForm = () => {
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
@@ -21,14 +23,6 @@ const LoginForm = () => {
   const loading = useSelector(selectLoading);
   const errors = useSelector(selectErrors);
   const showPassword = useSelector(selectShowPassword);
-  const newErrors = useSelector(selectNewErrors) || {};
-
-
-
-
-
-
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     dispatch(setFormDataRedux({ [name]: value }));
@@ -47,20 +41,21 @@ const LoginForm = () => {
     e.preventDefault();
     
     // Simple validation
-
-    dispatch(setNewErrors({})); // Clear previous new errors
+    const validationErrors = {};
+    dispatch(setNewErrors({})); // Clear previous errors
 
     if (!formData.schoolId.trim()) {
-      dispatch(setNewErrors({schoolId:'School ID is required'}))
+      validationErrors.schoolId = 'School ID is required';
     }
     if (!formData.password) {
-      dispatch(setNewErrors({password:'Password is required'}))
+      validationErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
-      dispatch(setNewErrors({password:'Password must be at least 6 characters'}))
+      validationErrors.password = 'Password must be at least 6 characters';
     }
     
-    if (Object.keys(newErrors).length > 0) {
-      dispatch(setErrors(newErrors))
+    if (Object.keys(validationErrors).length > 0) {
+      dispatch(setNewErrors(validationErrors));
+      dispatch(setErrors(validationErrors))
       return;
     }
     
@@ -68,8 +63,7 @@ const LoginForm = () => {
     dispatch(setLoading(true))
     setTimeout(() => {
       dispatch(setLoading(false))
-      // In a real app, you would redirect to dashboard here
-      alert('Login successful! Redirecting to dashboard...');
+      navigate('/dashboard');
     }, 1500);
   };
 

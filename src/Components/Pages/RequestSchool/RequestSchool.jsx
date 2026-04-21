@@ -26,7 +26,7 @@ const RequestSchool = () => {
     handleFileChange,
     handleRecheck,
     handleSubmit,
-    setStep
+    goToStep
   } = useRequestSchoolForm();
 
   const sectionRef = React.useRef(null);
@@ -87,7 +87,7 @@ const RequestSchool = () => {
                     schoolFound={schoolFound}
                     handleInputChange={handleInputChange}
                     handleRecheck={handleRecheck}
-                    setStep={setStep}
+                    setStep={goToStep}
                     loading={loading}
                   />
                 )}
@@ -97,7 +97,7 @@ const RequestSchool = () => {
                     formData={formData}
                     requesterRoles={requesterRoles}
                     handleInputChange={handleInputChange}
-                    setStep={setStep}
+                    setStep={goToStep}
                   />
                 )}
                 
@@ -108,7 +108,7 @@ const RequestSchool = () => {
                     schoolTypes={schoolTypes}
                     gradeRanges={gradeRanges}
                     handleInputChange={handleInputChange}
-                    setStep={setStep}
+                    setStep={goToStep}
                   />
                 )}
                 
@@ -117,7 +117,7 @@ const RequestSchool = () => {
                     formData={formData}
                     handleFileChange={handleFileChange}
                     handleSubmit={handleSubmit}
-                    setStep={setStep}
+                    setStep={goToStep}
                     loading={loading}
                   />
                 )}

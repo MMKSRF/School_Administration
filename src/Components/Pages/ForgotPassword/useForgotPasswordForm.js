@@ -221,6 +221,10 @@ const useForgotPasswordForm = () => {
     }, 1000);
   };
 
+  const goToStep = (nextStep) => {
+    dispatch(setStep(nextStep));
+  };
+
 
 
 
@@ -238,7 +242,7 @@ const useForgotPasswordForm = () => {
     handleVerifyCode,
     handleResetPassword,
     handleResendCode,
-    setStep
+    goToStep
   };
 };
 

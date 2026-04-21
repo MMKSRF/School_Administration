@@ -131,7 +131,7 @@ const useJoinSchoolForm = () => {
 
   
   const handleSchoolSelect = (school) => {
-    dispatch(setSelectedSchool({school}))
+    dispatch(setSelectedSchool(school))
     dispatch(setStep(2));
   };
 
@@ -187,6 +187,10 @@ const useJoinSchoolForm = () => {
     }, 2000);
   };
 
+  const goToStep = (nextStep) => {
+    dispatch(setStep(nextStep));
+  };
+
   return {
     step,
     selectedSchool,
@@ -203,7 +207,7 @@ const useJoinSchoolForm = () => {
     handleSchoolSelect,
     handleRoleSelect,
     handleSubmit,
-    setStep
+    goToStep
   };
 };
 

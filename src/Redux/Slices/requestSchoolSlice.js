@@ -49,7 +49,7 @@ const requestSchoolSlice = createSlice({
             state.step = action.payload;
         },
         setSearchResults: (state, action) => {
-            state.searchResults = [...state.searchResults,...action.payload]
+            state.searchResults = action.payload;
         },
         setSchoolFound: (state, action) => {
             state.schoolFound = action.payload;

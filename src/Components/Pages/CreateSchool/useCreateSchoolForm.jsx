@@ -139,6 +139,18 @@ const useCreateSchoolForm = () => {
     }
   };
 
+  const goToStep = (nextStep) => {
+    dispatch(setStep(nextStep));
+  };
+
+  const updateFormData = (payload) => {
+    dispatch(setFormData(payload));
+  };
+
+  const clearError = () => {
+    dispatch(setError(null));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -172,8 +184,9 @@ const useCreateSchoolForm = () => {
     success,
     error,
     step,
-    setStep,
-    setFormData,
+    goToStep,
+    updateFormData,
+    clearError,
 
     ethiopianRegions,
     academicLevels,
