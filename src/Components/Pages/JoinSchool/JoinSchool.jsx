@@ -26,7 +26,7 @@ const JoinSchool = () => {
     handleSchoolSelect,
     handleRoleSelect,
     handleSubmit,
-    setStep
+    goToStep
   } = useJoinSchoolForm();
 
   const sectionRef = useRef(null);
@@ -96,7 +96,7 @@ const JoinSchool = () => {
                   <Step2RoleSelection 
                     school={selectedSchool} 
                     onRoleSelect={handleRoleSelect} 
-                    onBack={() => setStep(1)}
+                    onBack={() => goToStep(1)}
                   />
                 )}
                 {step === 3 && (
@@ -110,7 +110,7 @@ const JoinSchool = () => {
                     onInputChange={handleInputChange}
                     onSubjectChange={handleSubjectChange}
                     onSubmit={handleSubmit}
-                    onBack={() => setStep(2)}
+                    onBack={() => goToStep(2)}
                     loading={loading}
                   />
                 )}

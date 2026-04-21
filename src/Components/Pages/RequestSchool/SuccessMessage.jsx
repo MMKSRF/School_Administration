@@ -1,4 +1,6 @@
 
+import { Link } from 'react-router-dom';
+
 const SuccessMessage = ({ schoolName }) => {
   return (
     <div className="max-w-2xl mx-auto text-center py-20">
@@ -17,12 +19,12 @@ const SuccessMessage = ({ schoolName }) => {
       </p>
       
       <div className="mt-10">
-        <a 
-          href="/" 
+        <Link 
+          to="/dashboard" 
           className="inline-block bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all"
         >
-          Back to Homepage
-        </a>
+          Open Dashboard
+        </Link>
       </div>
     </div>
   );

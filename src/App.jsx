@@ -19,6 +19,7 @@ const JoinSchool = lazy(() => import('./Components/Pages/JoinSchool/JoinSchool.j
 const RequestSchool = lazy(() => import('./Components/Pages/RequestSchool/RequestSchool.jsx'));
 const ForgotPassword = lazy(() => import('./Components/Pages/ForgotPassword/ForgotPassword.jsx'));
 const PasswordResetSuccess = lazy(() => import('./Components/Pages/PasswordResetSuccess'));
+const Dashboard = lazy(() => import('./Components/Pages/Dashboard.jsx'));
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
             <Route path="/request-school" element={<RequestSchool />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/password-reset-success" element={<PasswordResetSuccess />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

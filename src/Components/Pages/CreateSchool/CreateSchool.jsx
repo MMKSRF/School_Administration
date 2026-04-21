@@ -29,9 +29,9 @@ const CreateSchool = () => {
     handleNext,
     handleSubmit,
     schoolSizes,
-    setStep,
-    setFormData,
-    setError
+    goToStep,
+    updateFormData,
+    clearError
   } = useCreateSchoolForm();
   
   const formRef = useRef();
@@ -138,7 +138,7 @@ useEffect(() => {
                       <div className="error-message">
                         <FailureMessage 
                           errorMessage={error.message}
-                          onRetry={() => setError(null)}
+                          onRetry={clearError}
                         />
                       </div>
                     ) : (
@@ -159,8 +159,8 @@ useEffect(() => {
                             errors={errors}
                             handleChange={handleChange}
                             handleNext={handleNext}
-                            setStep={setStep}
-                            setFormData={setFormData}
+                            setStep={goToStep}
+                            setFormData={updateFormData}
                             ethiopianRegions={ethiopianRegions}
                             schoolSizes={schoolSizes}
                     

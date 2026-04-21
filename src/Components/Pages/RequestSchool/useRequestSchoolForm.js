@@ -221,6 +221,10 @@ const useRequestSchoolForm = () => {
     }, 2000);
   };
 
+  const goToStep = (nextStep) => {
+    dispatch(setStep(nextStep));
+  };
+
 
 
 
@@ -240,7 +244,7 @@ const useRequestSchoolForm = () => {
     handleFileChange,
     handleRecheck,
     handleSubmit,
-    setStep
+    goToStep
   };
 };
 
